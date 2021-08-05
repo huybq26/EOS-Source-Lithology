@@ -1,9 +1,11 @@
+from numpy.core.overrides import array_function_from_dispatcher
 import osmnx as ox
 import matplotlib.pyplot as plt
 import numpy as np
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 import os
 import runpy
+import openpyxl
 
 import pandas as pd
 from sklearn.metrics import plot_confusion_matrix
@@ -24,7 +26,13 @@ from io import BytesIO
 app = Flask(__name__)
 # app.config['UPLOAD_EXTENSIONS'] = ['.txt']
 
-#y_compare
+# y_compare
+
+array_for_peridotite = []
+array_for_mafic = []
+array_for_transitional = []
+
+
 def run_first_model():
     data = pd.read_excel('data2_check.xlsx', header=None,
                          skipfooter=1, index_col=1)
@@ -383,6 +391,8 @@ def run_transitional_model():
     plt.yticks(fontsize=14)
 
     plt.xlim(0.5, 4)
+    global array_for_transitional
+    array_for_transitional = y_compare
     return plt
     # plt.savefig('compare_lee_histogram.png',dpi=300)
 
@@ -553,6 +563,8 @@ def run_mafic_model():
     plt.yticks(fontsize=14)
 
     plt.xlim(0.5, 4)
+    global array_for_mafic
+    array_for_mafic = y_compare
     # plt.savefig('compare_lee_histogram.png',dpi=300)
     return plt
 
@@ -704,18 +716,69 @@ def run_peridotite_model():
     plt.yticks(fontsize=14)
 
     plt.xlim(0.5, 4)
+    global array_for_peridotite
+    array_for_peridotite = y_compare
     return plt
     # plt.savefig('compare_lee_histogram.png',dpi=300)
+
+
+def listToString(s):
+    str1 = ""
+    for ele in s:
+        str1 += str(ele)
+        str1 += " "
+    return str1
+
+
+def run_modify_excel():
+    theFile = openpyxl.load_workbook('example.xlsx')
+    arr = theFile.sheetnames
+    # print(arr[0])
+    currentSheet = theFile[arr[0]]
+    print(currentSheet['B4'].value)
+    currentSheet['L1'] = "Peridotite"
+    currentSheet['M1'] = "Mafic"
+    currentSheet['N1'] = "Transitional"
+    # currentSheet['M2'] = listToString(sample_array)
+    marker_row = ""
+    for i in range(0, len(array_for_peridotite)):
+        current_column = "L"
+        current_row = str(i+2)
+        current_location = current_column + current_row
+        currentSheet[current_location] = array_for_peridotite[i]
+        marker_row = current_row
+
+    for i in range(0, len(array_for_mafic)):
+        current_column = "M"
+        current_row = str(i+2)
+        current_location = current_column + current_row
+        currentSheet[current_location] = array_for_mafic[i]
+        marker_row = current_row
+
+    for i in range(0, len(array_for_transitional)):
+        current_column = "N"
+        current_row = str(i+2)
+        current_location = current_column + current_row
+        currentSheet[current_location] = array_for_transitional[i]
+        marker_row = current_row
+
+    marker_location = "L"+str(int(marker_row)+1)
+    theFile.save("./static/result.xlsx")
 
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index.html', methods=['GET', 'POST'])
 def index():
+    if os.path.isfile('example.xlsx'):
+        os.remove("example.xlsx")
+    if os.path.isfile('./static/result.xlsx'):
+        os.remove("./static/result.xlsx")
     if request.method == 'POST':
         input_file = request.files["upload-file"]
         if input_file.filename != '':
             input_file.save("example.xlsx")
             runpy.run_path(path_name='ANN_classification_web.py')
+    print(array_for_peridotite)
     return render_template("index.html")
 
 
@@ -747,6 +810,7 @@ def transitional():
 def mafic():
     if os.path.isfile('example.xlsx'):
         fig = run_mafic_model()
+        run_modify_excel()
         img = BytesIO()
         fig.savefig(img)
         img.seek(0)
@@ -766,6 +830,8 @@ def peridotite():
         return send_file(img, mimetype='image/png')
     return 0
 
+
+print("Sample text")
 
 if __name__ == "__main__":
     app.run(debug=True)
