@@ -1,0 +1,189 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Source Lithology</title>
+
+    <!-- Jquery -->
+    <script src="{{url_for('static', filename='js/utils/jquery-3.5.1.min.js')}}"></script>
+
+    <!-- Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename='css/bootstrap.min.css')}}"
+    />
+    <script src="{{url_for('static', filename='js/utils/bootstrap.min.js')}}"></script>
+
+    <!-- Plotly -->
+    <script src="{{url_for('static', filename='js/utils/plotly-latest.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename='js/index.js')}}"></script>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename='css/index.css')}}"
+    />
+  </head>
+
+  <body>
+
+    <div class="container cal-wrapper">
+        
+      <div class="input my-3 p-3">
+        <!-- <h3>Input:</h3> -->
+        <div style ="display: flex;flex-direction: row; justify-content: space-between; width: 100%;">
+          <div >
+            <img
+            width='180px'
+            height='80px'
+            src='https://petro.wovodat.org/assets/img/EOS.png'
+          />
+          </div>
+          <div style="margin-top: 80px;margin-bottom: 10px; ">
+            <p style="font-size: 32px; color: rgb(1, 66, 128)"><b>Source Lithology and Conditions</b></p>
+          </div>
+        
+          <div style ="margin-top: 5px;">
+             <img
+            width='180px'
+            height='70px'
+            src='https://petro.wovodat.org/assets/img/ntu.png'
+          />
+          </div>
+      </div>
+      <hr style ="width: 100%; background-color:#1c91ff; border-width: 5px ;margin-top: -10px;margin-bottom: 50px;"/>
+        
+      <div style= "margin-left: 10px; margin-top: -3px;">
+        <p>
+          <b>Upload your data: </b>
+          <span
+            >Please use the provided
+            <a
+              href="https://aptimer.wovodat.org/static/data_template.csv"
+              download="data_template.csv"
+              >data template</a
+            >
+            (.xlsx) to organise your data, and upload the
+            <span style="color: red"> xlsx</span> file using the green button
+            below.</span
+          >
+        </p>
+        <form
+          method="POST"
+          action=""
+          enctype="multipart/form-data"
+          class="upload"
+        >
+          <div class="custom-file">
+            <input
+              type="file"
+              name="upload-file"
+              class="custom-file-input"
+              id="upload-file"
+            />
+            <label class="custom-file-label" for="customFile"
+              >Choose file</label
+            >
+          </div>
+          <button class="btn button-upload" id="showbtn" type="submit" style= "margin-top: 8px;">
+            Source Lithology (Run)
+          </button>
+        </form>
+        </div>
+        <hr / style = "margin-top: 40px;">
+
+        <!-- To show the ANN classification figure -->
+        <div
+          class="plot"
+          style="display: flex; align-items: center; margin-bottom: 20px; flex-direction: column; margin-top: 10px;"
+        >
+        <div><h5><b>Graph of MgO vs CaO with labels</b></h5></div>
+        <div style = "display: flex;">
+          <img src="{{ url_for('fig') }}" alt=" Please upload your excel file" height="350" />
+        </div>
+        </div>
+        <hr />
+        <p><b>Choose one option: </b></p>
+        <form class="calculate-pt">
+          <div style="display: flex; flex-direction: column; margin-left: 5px">
+            <div style="display: flex; flex-direction: row; margin-bottom: 8px">
+              <input
+                type="radio"
+                id="peridotite"
+                name="type"
+                value="peridotite"
+              />
+              <div style="margin-left: 10px">Peridotite</div>
+            </div>
+            <div style="display: flex; flex-direction: row; margin-bottom: 8px">
+              <input type="radio" id="mafic" name="type" value="mafic" />
+              <div style="margin-left: 10px">Mafic</div>
+            </div>
+            <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+              <input
+                type="radio"
+                id="transitional"
+                name="type"
+                value="transitional"
+              />
+              <div style="margin-left: 10px">Transitional</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: row;">
+          <button class="btn" type="submit">
+            Calculate the P/T ratio
+          </button>
+          <a href = '../static/result.xlsx' download='result.xlxs' style="text-decoration: none;">
+            <button class = "btn" type="button" style ="margin-left: 10px; background: #099cb3; color: white;">
+            Download result file
+          </button>
+          </a>
+        </div>
+          
+          
+          
+        </form>
+        <hr />
+
+        <div class="pt-plot" style="display: flex; justify-content: center;"">
+          <!-- <img src="../static/image.png" alt="Graph will be displayed here" /> -->
+          <div id="mafic-plot" style="display: none">
+            <img
+              id="mafic-image"
+              src="{{ url_for('mafic') }}"
+              alt=" "
+              height="350"
+            />
+          </div>
+          <div id="peridotite-plot" style="display: none">
+            <img
+              id="peridotite-image"
+              src="{{ url_for('peridotite') }}"
+              alt=" "
+              height="350"
+            />
+          </div>
+          <div id="transitional-plot" style="display: none">
+            <img
+              id="transitional-image"
+              src="{{ url_for('transitional') }}"
+              alt=" "
+              height="350"
+            />
+          </div>
+        </div>
+      </div>
+      <div id="radio"></div>
+    </div>
+  </body>
+
+  <script>
+    // Add the following code if you want the name of the file appear on select
+    $('.custom-file-input').on('change', function () {
+      var fileName = $(this).val().split('\\').pop();
+      $(this)
+        .siblings('.custom-file-label')
+        .addClass('selected')
+        .html(fileName);
+    });
+  </script>
+</html>

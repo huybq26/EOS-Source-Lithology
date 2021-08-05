@@ -1,0 +1,89 @@
+body {
+  background-color: #a598ee;
+  background-size: cover;
+  background-position: center center;
+}
+
+header {
+  color: #fff;
+  text-align: center;
+}
+
+.cal-wrapper > div {
+  background: #fff;
+  box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+/* Input */
+div.input input[type='text'] {
+  width: 80px;
+  padding: 1px 3px;
+  margin: 1px;
+  font-size: 12px;
+}
+
+div.input button {
+  background: #63c76a;
+}
+
+div.input button:hover {
+  background: #50c058;
+}
+
+div.input button:disabled {
+  background: #63c76a !important;
+}
+
+div.input .upload div.custom-file {
+  max-width: 30%;
+  margin-right: 30px;
+}
+
+div.input .button-cal,
+div.input .button-upload-inibound {
+  position: absolute;
+  bottom: 0;
+  left: 1rem;
+}
+
+div.input .button-inibound {
+  position: absolute;
+  bottom: 0;
+  left: 6rem;
+}
+
+div.input .file-inibound {
+  position: absolute;
+  bottom: 3rem;
+  left: 1rem;
+}
+
+div.input .calculation-result td,
+div.input .calculation-result th {
+  border: 1px solid #dddddd;
+}
+
+div.input .calculation-result td:last-child {
+  border: none;
+}
+
+/* Model-result */
+
+div.model-result td,
+div.model-result th {
+  border: 1px solid #dddddd;
+  text-align: left;
+}
+
+div.model-result th,
+div.model-result td:last-child {
+  border: none;
+}
+
+/* Footer */
+footer.page-footer {
+  font-size: 12px;
+  background-color: #2e2d36;
+  color: #fff;
+}
