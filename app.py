@@ -28,9 +28,12 @@ app = Flask(__name__)
 
 # y_compare
 
-array_for_peridotite = []
-array_for_mafic = []
-array_for_transitional = []
+array_for_peridotite_temperature = []
+array_for_mafic_temperature = []
+array_for_transitional_temperature = []
+array_for_peridotite_pressure = []
+array_for_mafic_pressure = []
+array_for_transitional_pressure = []
 
 
 def run_first_model():
@@ -217,52 +220,29 @@ def run_transitional_model():
     index3 = np.where(Group == 3)
     index_mafic = index3[0]
 
-    # -------------------------------------------------------
-    # =============================================================================
-    # X = Traindata
-    # y = Group
-    #
-    #
-    #
-    #
-    # newX=X
-    # newy=y
-    #
-    # X_train, X_test, y_train, y_test = train_test_split(newX, newy, train_size=0.9, random_state = 0)
-    #
-    #
-    # clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(20, 20), random_state=1)
-    #
-    #
-    # clf = clf.fit(X_train, y_train)
-    #
-    # =============================================================================
+    meltdegree_transition = meltdegree[index_transition]
 
-    # here we only consider mafic based on the data size
-    # mafic
-    # this part will change based on the user select
+    temperature_transition = temperature[index_transition]
 
-    meltdegree_mafic = meltdegree[index_transition]
+    pressure_transition = pressure[index_transition]
 
-    temperature_mafic = temperature[index_transition]
+    X_transition = Traindata[index_transition]  # traning data for mafic
 
-    pressure_mafic = pressure[index_transition]
-
-    X_mafic = Traindata[index_transition]  # traning data for mafic
-
-    hydrous_mafic = Hydrous[index_transition]
+    hydrous_transition = Hydrous[index_transition]
 
     # =============================================================================
     # mafic
 
-    newX = X_mafic
+    newX = X_transition
     # newy=md_label
     # newy=tem_label
-    newy_md = meltdegree_mafic
-    newy_tem = temperature_mafic
-    newy_pre = pressure_mafic
+    newy_md = meltdegree_transition
+    newy_tem = temperature_transition
+    newy_pre = pressure_transition
 
-    newy_pt = 1000*newy_pre/newy_tem
+    # newy_pt=1000*newy_pre/newy_tem
+
+    newy_pt = newy_tem/1000
 
     # =============================================================================
     # model = Sequential([
@@ -280,88 +260,79 @@ def run_transitional_model():
 
     model = Sequential()
 
-    model.add(Dense(100, input_shape=(10,)))
-    model.add(Dense(100, activation='softsign'))  # 0.88
-    model.add(Dense(100, activation='softsign'))  # 0.88
+    # for p/t
+    #model.add(Dense(100, input_shape=(10,)))
+    # model.add(Dense(100, activation='softsign')) # 0.88
+    # model.add(Dense(100, activation='softsign')) # 0.88
+    #model.add(Dense(1, activation='linear'))
+
+    # for temperature
+    model.add(Dense(100, activation='softsign'))
+
+    # model.add(Dense(100, activation='elu')) # 0.88
+    model.add(Dense(100, activation='relu'))  # 0.88
+    model.add(Dense(100, activation='relu'))  # 0.88
+
+    model.add(Dense(100, activation='relu'))  # 0.88
+
+    model.add(Dense(1, activation='linear'))
 
     # model.add(Dense(100, activation='tanh')) # 0.88
 
     # tanh,exponential,linear
+
     #model.add(Dense(1, activation='linear'))
-    #model.add(Dense(1, activation='softplus'))
-    model.add(Dense(1, activation='linear'))
 
     model.compile(optimizer='rmsprop',
                   loss='mean_squared_error')
 
     hist = model.fit(X_train, y_train,
-                     batch_size=30, epochs=200,
+                     batch_size=20, epochs=400,
                      validation_data=(X_test, y_test))
-
-    # ----------------------------------------------loss
-    plt.plot(hist.history['loss'])
-    plt.plot(hist.history['val_loss'])
-    plt.title('Model loss')
-    plt.ylabel('Loss')
-    plt.xlabel('Epoch')
-    plt.legend(['Train', 'Test'], loc='upper right')
-    # plt.show()
-
-    # --------------------------------------------accurancy
-
-    plt.figure()
 
     y_pred = model.predict(newX)
     y_pred = y_pred.flatten()
-
     y_train = newy_pt.flatten()
-
-    r, s = stats.pearsonr(y_pred, y_train)
-
-    my = sum(y_train)/len(y_train)
-
-    r2_1 = 1-sum((y_pred-y_train)**2)/sum((y_train-my)**2)
-    print('${R_2}$= %6.2f  ' % r2_1)
 
     rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
     print('RMSE= %6.2f  ' % rmse)
 
-    # ---------------------------------------------------figure1  transtional
+    # =============================================================================
+    # ------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------
+    # pressure
 
-    plt.scatter(y_train, y_pred, marker='o', facecolor='g', edgecolor='k')
+    newy_pt = newy_pre
 
-    #plt.legend(['Volatile-free and hydrous','Carbonated'], loc='upper left')
-    #name=('Overall data: ${R^2}$= %6.2f,    RMSE=%6.2f' %(r2_1, rmse))
-    #name=('Overall data: R= %6.2f,    RMSE=%6.2f MPa/℃' %(r, rmse))
+    X_train, X_test, y_train, y_test = train_test_split(
+        newX, newy_pt, train_size=0.8, random_state=0)
 
-    # plt.title(name)
-    plt.text(1, 5, 'Volatile-free and hydrous\nT=850-1600℃\nP=0.5-6 GPa',
-             fontsize=11, weight='bold')
-    #name_anhy=('${R^2}$= %6.2f\nRMSE=%6.2f' %(r2_anhy, rmse_anhy))
-    name = ('R= %6.2f\nRMSE=%6.2f MPa/℃' % (r, rmse))
-    plt.text(1, 4.1, name)
+    modelp = Sequential()
 
-    plt.title('Transitional')
+    # for temperature
+    modelp.add(Dense(100, activation='softsign'))
+    modelp.add(Dense(100, activation='softsign'))
 
-    # plt.text(1.2,0.2,name)
-    plt.ylabel('Predicted P/T (MPa/℃)', fontsize=12)
-    plt.xlabel('Experimental P/T (MPa/℃)', fontsize=12)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
+    modelp.add(Dense(1, activation='linear'))
 
-    plt.plot([0, 11], [0, 11], 'k-')  # p/t
-    plt.plot([0, 11], [0.5, 11.5], 'k--')  # p/t
-    plt.plot([0, 11], [-0.5, 10.5], 'k--')  # p/t
+    modelp.compile(optimizer='rmsprop',
+                   loss='mean_squared_error')
 
-    plt.text(5.5, 6.7, '+0.5')
-    plt.text(6.6, 5.8, '-0.5')
+    histp = modelp.fit(X_train, y_train,
+                       batch_size=20, epochs=200,
+                       validation_data=(X_test, y_test))
 
-    plt.xlim(0, 7)
-    plt.ylim(0, 7)
+    yp_pred = modelp.predict(newX)
+    yp_pred = yp_pred.flatten()
+    yp_train = newy_pt.flatten()
 
-    # ------------------------------------------------------------------------------
+    rmsep = math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
 
-    # here input the example
+    # --------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------
+    # read natural example
 
     data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
 
@@ -373,34 +344,270 @@ def run_transitional_model():
         for j in range(0, 10):
             Naturedata[i][j] = data2.iloc[i, j]
 
-    y_compare = model.predict(Naturedata)
-    y_compare = y_compare.flatten()
-
-    # plt.savefig('compare_lee_scatter.png',dpi=300)
-    # ------------------------version 2
+    T = model.predict(Naturedata)
+    P = modelp.predict(Naturedata)
 
     plt.figure()
-    # histtype='step',
 
-    n, bins, patches = plt.hist(y_compare, 15, density=False,
-                                facecolor='k', edgecolor='k', alpha=0.8, linewidth=2)
+    # plot error bar
+    plt.errorbar(T*1000, P, xerr=rmse*1000, yerr=rmsep, fmt='o', mfc='b',
+                 mec='k', ecolor='k', elinewidth=1, capthick=1, capsize=0)
+    ax = plt.gca()
 
-    plt.xlabel('Predicted P/T (MPa/℃)', fontsize=12)
-    plt.ylabel('Number', fontsize=12)
-    plt.xticks(fontsize=14)
-    plt.yticks(fontsize=14)
+    plt.xlim(1000, 1800)
+    plt.ylim(0, 7)
 
-    plt.xlim(0.5, 4)
-    global array_for_transitional
-    array_for_transitional = y_compare
+    ax.invert_yaxis()
+    plt.ylabel('Pressure (GPa)')
+    ax.xaxis.set_ticks_position('top')  # 将x轴的位置设置在顶部
+
+    #ax.set_xticklabels(row_labels, minor=False)
+
+    ax.set_xlabel('Temperature (℃)')
+    ax.xaxis.set_label_position('top')
+    global array_for_transitional_pressure
+    global array_for_transitional_temperature
+    array_for_transitional_temperature = T
+    array_for_transitional_pressure = P
     return plt
-    # plt.savefig('compare_lee_histogram.png',dpi=300)
+
+    # data = pd.read_excel(
+    #     'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1)
+
+    # # change into the data we need float
+    # # train data determined from dataframe
+    # Traindata = np.zeros((915, 10))
+    # for i in range(0, 915):
+    #     for j in range(0, 10):
+    #         Traindata[i][j] = data.iloc[i+1, j+6]
+
+    # # change nan into 0
+    # for i in range(0, 915):
+    #     for j in range(0, 10):
+    #         if (np.isnan(Traindata[i][j])):
+    #             Traindata[i][j] = 0
+
+    # # lable from dataframe
+    # Group = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     Group[i] = data.iloc[i+1, 24]
+
+    # # melting degree
+    # meltdegree = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     meltdegree[i] = data.iloc[i+1, 3]
+
+    # # temperature
+    # temperature = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     temperature[i] = data.iloc[i+1, 2]
+
+    # # pressure
+    # pressure = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     pressure[i] = data.iloc[i+1, 1]
+
+    # # dry or not from dataframe
+    # # 1 is hydrous  0 is anhydrous
+    # Hydrous = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     Hydrous[i] = data.iloc[i+1, 29]
+
+    # index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
+    # #index1 = np.where(Group == 1)
+
+    # index_peridotite = index1[0]
+
+    # index2 = np.where((Group == 2) & (Hydrous == 1))
+    # index_transition = index2[0]
+
+    # #index3 = np.where((Group == 3) & (Hydrous==1))
+    # index3 = np.where(Group == 3)
+    # index_mafic = index3[0]
+
+    # # -------------------------------------------------------
+    # # =============================================================================
+    # # X = Traindata
+    # # y = Group
+    # #
+    # #
+    # #
+    # #
+    # # newX=X
+    # # newy=y
+    # #
+    # # X_train, X_test, y_train, y_test = train_test_split(newX, newy, train_size=0.9, random_state = 0)
+    # #
+    # #
+    # # clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(20, 20), random_state=1)
+    # #
+    # #
+    # # clf = clf.fit(X_train, y_train)
+    # #
+    # # =============================================================================
+
+    # # here we only consider mafic based on the data size
+    # # mafic
+    # # this part will change based on the user select
+
+    # meltdegree_mafic = meltdegree[index_transition]
+
+    # temperature_mafic = temperature[index_transition]
+
+    # pressure_mafic = pressure[index_transition]
+
+    # X_mafic = Traindata[index_transition]  # traning data for mafic
+
+    # hydrous_mafic = Hydrous[index_transition]
+
+    # # =============================================================================
+    # # mafic
+
+    # newX = X_mafic
+    # # newy=md_label
+    # # newy=tem_label
+    # newy_md = meltdegree_mafic
+    # newy_tem = temperature_mafic
+    # newy_pre = pressure_mafic
+
+    # newy_pt = 1000*newy_pre/newy_tem
+
+    # # =============================================================================
+    # # model = Sequential([
+    # #     Dense(10, activation='relu', input_shape=(10,)),
+    # #     Dense(10, activation='relu'),
+    # #     Dense(1, activation='sigmoid'),
+    # # ])
+    # #
+    # #
+    # # model.compile(loss='mean_squared_error', optimizer='adam')
+    # # =============================================================================
+
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     newX, newy_pt, train_size=0.8, random_state=0)
+
+    # model = Sequential()
+
+    # model.add(Dense(100, input_shape=(10,)))
+    # model.add(Dense(100, activation='softsign'))  # 0.88
+    # model.add(Dense(100, activation='softsign'))  # 0.88
+
+    # # model.add(Dense(100, activation='tanh')) # 0.88
+
+    # # tanh,exponential,linear
+    # #model.add(Dense(1, activation='linear'))
+    # #model.add(Dense(1, activation='softplus'))
+    # model.add(Dense(1, activation='linear'))
+
+    # model.compile(optimizer='rmsprop',
+    #               loss='mean_squared_error')
+
+    # hist = model.fit(X_train, y_train,
+    #                  batch_size=30, epochs=200,
+    #                  validation_data=(X_test, y_test))
+
+    # # ----------------------------------------------loss
+    # plt.plot(hist.history['loss'])
+    # plt.plot(hist.history['val_loss'])
+    # plt.title('Model loss')
+    # plt.ylabel('Loss')
+    # plt.xlabel('Epoch')
+    # plt.legend(['Train', 'Test'], loc='upper right')
+    # # plt.show()
+
+    # # --------------------------------------------accurancy
+
+    # plt.figure()
+
+    # y_pred = model.predict(newX)
+    # y_pred = y_pred.flatten()
+
+    # y_train = newy_pt.flatten()
+
+    # r, s = stats.pearsonr(y_pred, y_train)
+
+    # my = sum(y_train)/len(y_train)
+
+    # r2_1 = 1-sum((y_pred-y_train)**2)/sum((y_train-my)**2)
+    # print('${R_2}$= %6.2f  ' % r2_1)
+
+    # rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
+    # print('RMSE= %6.2f  ' % rmse)
+
+    # # ---------------------------------------------------figure1  transtional
+
+    # plt.scatter(y_train, y_pred, marker='o', facecolor='g', edgecolor='k')
+
+    # #plt.legend(['Volatile-free and hydrous','Carbonated'], loc='upper left')
+    # #name=('Overall data: ${R^2}$= %6.2f,    RMSE=%6.2f' %(r2_1, rmse))
+    # #name=('Overall data: R= %6.2f,    RMSE=%6.2f MPa/℃' %(r, rmse))
+
+    # # plt.title(name)
+    # plt.text(1, 5, 'Volatile-free and hydrous\nT=850-1600℃\nP=0.5-6 GPa',
+    #          fontsize=11, weight='bold')
+    # #name_anhy=('${R^2}$= %6.2f\nRMSE=%6.2f' %(r2_anhy, rmse_anhy))
+    # name = ('R= %6.2f\nRMSE=%6.2f MPa/℃' % (r, rmse))
+    # plt.text(1, 4.1, name)
+
+    # plt.title('Transitional')
+
+    # # plt.text(1.2,0.2,name)
+    # plt.ylabel('Predicted P/T (MPa/℃)', fontsize=12)
+    # plt.xlabel('Experimental P/T (MPa/℃)', fontsize=12)
+    # plt.xticks(fontsize=12)
+    # plt.yticks(fontsize=12)
+
+    # plt.plot([0, 11], [0, 11], 'k-')  # p/t
+    # plt.plot([0, 11], [0.5, 11.5], 'k--')  # p/t
+    # plt.plot([0, 11], [-0.5, 10.5], 'k--')  # p/t
+
+    # plt.text(5.5, 6.7, '+0.5')
+    # plt.text(6.6, 5.8, '-0.5')
+
+    # plt.xlim(0, 7)
+    # plt.ylim(0, 7)
+
+    # # ------------------------------------------------------------------------------
+
+    # # here input the example
+
+    # data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+
+    # # train data determined from dataframe
+
+    # Num_data = len(data2)
+    # Naturedata = np.zeros((Num_data, 10))
+    # for i in range(0, Num_data):
+    #     for j in range(0, 10):
+    #         Naturedata[i][j] = data2.iloc[i, j]
+
+    # y_compare = model.predict(Naturedata)
+    # y_compare = y_compare.flatten()
+
+    # # plt.savefig('compare_lee_scatter.png',dpi=300)
+    # # ------------------------version 2
+
+    # plt.figure()
+    # # histtype='step',
+
+    # n, bins, patches = plt.hist(y_compare, 15, density=False,
+    #                             facecolor='k', edgecolor='k', alpha=0.8, linewidth=2)
+
+    # plt.xlabel('Predicted P/T (MPa/℃)', fontsize=12)
+    # plt.ylabel('Number', fontsize=12)
+    # plt.xticks(fontsize=14)
+    # plt.yticks(fontsize=14)
+
+    # plt.xlim(0.5, 4)
+    # global array_for_transitional
+    # array_for_transitional = y_compare
+    # return plt
+    # # plt.savefig('compare_lee_histogram.png',dpi=300)
 
 
 def run_mafic_model():
-    data = pd.read_excel(
-        'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1)
-
+    data = pd.read_excel('data2_check_dry.xlsx',
+                         header=None, skipfooter=1, index_col=1)
     # change into the data we need float
     # train data determined from dataframe
     Traindata = np.zeros((915, 10))
@@ -452,30 +659,6 @@ def run_mafic_model():
     index3 = np.where(Group == 3)
     index_mafic = index3[0]
 
-    # -------------------------------------------------------
-    # =============================================================================
-    # X = Traindata
-    # y = Group
-    #
-    #
-    #
-    #
-    # newX=X
-    # newy=y
-    #
-    # X_train, X_test, y_train, y_test = train_test_split(newX, newy, train_size=0.9, random_state = 0)
-    #
-    #
-    # clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(20, 20), random_state=1)
-    #
-    #
-    # clf = clf.fit(X_train, y_train)
-    #
-    # =============================================================================
-
-    # here we only consider mafic based on the data size
-    # mafic
-
     meltdegree_mafic = meltdegree[index_mafic]
 
     temperature_mafic = temperature[index_mafic]
@@ -496,7 +679,9 @@ def run_mafic_model():
     newy_tem = temperature_mafic
     newy_pre = pressure_mafic
 
-    newy_pt = 1000*newy_pre/newy_tem
+    # newy_pt=1000*newy_pre/newy_tem
+
+    newy_pt = newy_tem/1000
 
     # =============================================================================
     # model = Sequential([
@@ -514,26 +699,102 @@ def run_mafic_model():
 
     model = Sequential()
 
-    model.add(Dense(100, input_shape=(10,)))
-    model.add(Dense(100, activation='softsign'))  # 0.88
-    model.add(Dense(100, activation='softsign'))  # 0.88
+    # for p/t
+    #model.add(Dense(100, input_shape=(10,)))
+    # model.add(Dense(100, activation='softsign')) # 0.88
+    # model.add(Dense(100, activation='softsign')) # 0.88
+    #model.add(Dense(1, activation='linear'))
+
+    # for temperature
+    model.add(Dense(100, activation='softsign'))
+
+    # model.add(Dense(100, activation='elu')) # 0.88
+    model.add(Dense(100, activation='relu'))  # 0.88
+    model.add(Dense(100, activation='relu'))  # 0.88
+
+    model.add(Dense(100, activation='relu'))  # 0.88
+
+    model.add(Dense(1, activation='linear'))
 
     # model.add(Dense(100, activation='tanh')) # 0.88
 
     # tanh,exponential,linear
+
     #model.add(Dense(1, activation='linear'))
-    #model.add(Dense(1, activation='softplus'))
-    model.add(Dense(1, activation='linear'))
 
     model.compile(optimizer='rmsprop',
                   loss='mean_squared_error')
 
     hist = model.fit(X_train, y_train,
-                     batch_size=30, epochs=200,
+                     batch_size=20, epochs=300,
                      validation_data=(X_test, y_test))
 
-    # ------------------------------------------------------------input the new sample
-    # here input the example
+    y_pred = model.predict(newX)
+    y_pred = y_pred.flatten()
+    y_train = newy_pt.flatten()
+
+    rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
+
+    # ==========================================================================================
+    # ==========================================================================================
+    # ==========================================================================================
+    # ==========================================================================================
+    # ------------------------------------------------------------------------------------------
+    # pressure
+
+    newX = X_mafic
+    # newy=md_label
+    # newy=tem_label
+    newy_md = meltdegree_mafic
+    newy_tem = temperature_mafic
+    newy_pre = pressure_mafic
+
+    # newy_pt=1000*newy_pre/newy_tem
+
+    newy_pt = newy_pre
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        newX, newy_pt, train_size=0.8, random_state=0)
+
+    modelp = Sequential()
+
+    # for p/t
+    #model.add(Dense(100, input_shape=(10,)))
+    # model.add(Dense(100, activation='softsign')) # 0.88
+    # model.add(Dense(100, activation='softsign')) # 0.88
+    #model.add(Dense(1, activation='linear'))
+
+    # for temperature
+    modelp.add(Dense(100, activation='softsign'))
+
+    modelp.add(Dense(100, activation='relu'))  # 0.88
+    modelp.add(Dense(100, activation='relu'))  # 0.88
+    modelp.add(Dense(100, activation='relu'))  # 0.88
+
+    modelp.add(Dense(1, activation='linear'))
+
+    # model.add(Dense(100, activation='tanh')) # 0.88
+
+    # tanh,exponential,linear
+
+    #model.add(Dense(1, activation='linear'))
+
+    modelp.compile(optimizer='rmsprop',
+                   loss='mean_squared_error')
+
+    histp = modelp.fit(X_train, y_train,
+                       batch_size=20, epochs=200,
+                       validation_data=(X_test, y_test))
+
+    yp_pred = modelp.predict(newX)
+    yp_pred = yp_pred.flatten()
+    yp_train = newy_pt.flatten()
+
+    rmsep = math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
+
+    # --------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------
+    # read natural example
 
     data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
 
@@ -545,28 +806,202 @@ def run_mafic_model():
         for j in range(0, 10):
             Naturedata[i][j] = data2.iloc[i, j]
 
-    y_compare = model.predict(Naturedata)
-    y_compare = y_compare.flatten()
-
-    # plt.savefig('compare_lee_scatter.png',dpi=300)
-    # ------------------------version 2
+    T = model.predict(Naturedata)
+    P = modelp.predict(Naturedata)
 
     plt.figure()
-    # histtype='step',
 
-    n, bins, patches = plt.hist(
-        y_compare, 15, density=False, facecolor='k', edgecolor='k', alpha=0.8, linewidth=2)
+    # plot error bar
+    plt.errorbar(T*1000, P, xerr=rmse*1000, yerr=rmsep, fmt='o', mfc='b',
+                 mec='k', ecolor='k', elinewidth=1, capthick=1, capsize=0)
+    ax = plt.gca()
 
-    plt.xlabel('Predicted P/T (MPa/℃)', fontsize=12)
-    plt.ylabel('Number', fontsize=12)
-    plt.xticks(fontsize=14)
-    plt.yticks(fontsize=14)
+    plt.xlim(1000, 1800)
+    plt.ylim(0, 7)
 
-    plt.xlim(0.5, 4)
-    global array_for_mafic
-    array_for_mafic = y_compare
-    # plt.savefig('compare_lee_histogram.png',dpi=300)
+    ax.invert_yaxis()
+    plt.ylabel('Pressure (GPa)')
+    ax.xaxis.set_ticks_position('top')  # 将x轴的位置设置在顶部
+
+    #ax.set_xticklabels(row_labels, minor=False)
+
+    ax.set_xlabel('Temperature (℃)')
+    ax.xaxis.set_label_position('top')
+
+    global array_for_mafic_pressure
+    global array_for_mafic_temperature
+    array_for_mafic_temperature = T
+    array_for_mafic_pressure = P
     return plt
+#     data = pd.read_excel(
+#         'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1)
+
+#     # change into the data we need float
+#     # train data determined from dataframe
+#     Traindata = np.zeros((915, 10))
+#     for i in range(0, 915):
+#         for j in range(0, 10):
+#             Traindata[i][j] = data.iloc[i+1, j+6]
+
+#     # change nan into 0
+#     for i in range(0, 915):
+#         for j in range(0, 10):
+#             if (np.isnan(Traindata[i][j])):
+#                 Traindata[i][j] = 0
+
+#     # lable from dataframe
+#     Group = np.zeros((915, 1))
+#     for i in range(0, 915):
+#         Group[i] = data.iloc[i+1, 24]
+
+#     # melting degree
+#     meltdegree = np.zeros((915, 1))
+#     for i in range(0, 915):
+#         meltdegree[i] = data.iloc[i+1, 3]
+
+#     # temperature
+#     temperature = np.zeros((915, 1))
+#     for i in range(0, 915):
+#         temperature[i] = data.iloc[i+1, 2]
+
+#     # pressure
+#     pressure = np.zeros((915, 1))
+#     for i in range(0, 915):
+#         pressure[i] = data.iloc[i+1, 1]
+
+#     # dry or not from dataframe
+#     # 1 is hydrous  0 is anhydrous
+#     Hydrous = np.zeros((915, 1))
+#     for i in range(0, 915):
+#         Hydrous[i] = data.iloc[i+1, 29]
+
+#     index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
+#     #index1 = np.where(Group == 1)
+
+#     index_peridotite = index1[0]
+
+#     index2 = np.where((Group == 2) & (Hydrous == 1))
+#     index_transition = index2[0]
+
+#     #index3 = np.where((Group == 3) & (Hydrous==1))
+#     index3 = np.where(Group == 3)
+#     index_mafic = index3[0]
+
+#     # -------------------------------------------------------
+#     # =============================================================================
+#     # X = Traindata
+#     # y = Group
+#     #
+#     #
+#     #
+#     #
+#     # newX=X
+#     # newy=y
+#     #
+#     # X_train, X_test, y_train, y_test = train_test_split(newX, newy, train_size=0.9, random_state = 0)
+#     #
+#     #
+#     # clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(20, 20), random_state=1)
+#     #
+#     #
+#     # clf = clf.fit(X_train, y_train)
+#     #
+#     # =============================================================================
+
+#     # here we only consider mafic based on the data size
+#     # mafic
+
+#     meltdegree_mafic = meltdegree[index_mafic]
+
+#     temperature_mafic = temperature[index_mafic]
+
+#     pressure_mafic = pressure[index_mafic]
+
+#     X_mafic = Traindata[index_mafic]  # traning data for mafic
+
+#     hydrous_mafic = Hydrous[index_mafic]
+
+#     # =============================================================================
+#     # mafic
+
+#     newX = X_mafic
+#     # newy=md_label
+#     # newy=tem_label
+#     newy_md = meltdegree_mafic
+#     newy_tem = temperature_mafic
+#     newy_pre = pressure_mafic
+
+#     newy_pt = 1000*newy_pre/newy_tem
+
+#     # =============================================================================
+#     # model = Sequential([
+#     #     Dense(10, activation='relu', input_shape=(10,)),
+#     #     Dense(10, activation='relu'),
+#     #     Dense(1, activation='sigmoid'),
+#     # ])
+#     #
+#     #
+#     # model.compile(loss='mean_squared_error', optimizer='adam')
+#     # =============================================================================
+
+#     X_train, X_test, y_train, y_test = train_test_split(
+#         newX, newy_pt, train_size=0.8, random_state=0)
+
+#     model = Sequential()
+
+#     model.add(Dense(100, input_shape=(10,)))
+#     model.add(Dense(100, activation='softsign'))  # 0.88
+#     model.add(Dense(100, activation='softsign'))  # 0.88
+
+#     # model.add(Dense(100, activation='tanh')) # 0.88
+
+#     # tanh,exponential,linear
+#     #model.add(Dense(1, activation='linear'))
+#     #model.add(Dense(1, activation='softplus'))
+#     model.add(Dense(1, activation='linear'))
+
+#     model.compile(optimizer='rmsprop',
+#                   loss='mean_squared_error')
+
+#     hist = model.fit(X_train, y_train,
+#                      batch_size=30, epochs=200,
+#                      validation_data=(X_test, y_test))
+
+#     # ------------------------------------------------------------input the new sample
+#     # here input the example
+
+#     data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+
+#     # train data determined from dataframe
+
+#     Num_data = len(data2)
+#     Naturedata = np.zeros((Num_data, 10))
+#     for i in range(0, Num_data):
+#         for j in range(0, 10):
+#             Naturedata[i][j] = data2.iloc[i, j]
+
+#     y_compare = model.predict(Naturedata)
+#     y_compare = y_compare.flatten()
+
+#     # plt.savefig('compare_lee_scatter.png',dpi=300)
+#     # ------------------------version 2
+
+#     plt.figure()
+#     # histtype='step',
+
+#     n, bins, patches = plt.hist(
+#         y_compare, 15, density=False, facecolor='k', edgecolor='k', alpha=0.8, linewidth=2)
+
+#     plt.xlabel('Predicted P/T (MPa/℃)', fontsize=12)
+#     plt.ylabel('Number', fontsize=12)
+#     plt.xticks(fontsize=14)
+#     plt.yticks(fontsize=14)
+
+#     plt.xlim(0.5, 4)
+#     global array_for_mafic
+#     array_for_mafic = y_compare
+#     # plt.savefig('compare_lee_histogram.png',dpi=300)
+#     return plt
 
 
 def run_peridotite_model():
@@ -624,30 +1059,6 @@ def run_peridotite_model():
     index3 = np.where(Group == 3)
     index_mafic = index3[0]
 
-    # -------------------------------------------------------
-    # =============================================================================
-    # X = Traindata
-    # y = Group
-    #
-    #
-    #
-    #
-    # newX=X
-    # newy=y
-    #
-    # X_train, X_test, y_train, y_test = train_test_split(newX, newy, train_size=0.9, random_state = 0)
-    #
-    #
-    # clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(20, 20), random_state=1)
-    #
-    #
-    # clf = clf.fit(X_train, y_train)
-    #
-    # =============================================================================
-
-    # here we only consider mafic based on the data size
-    # mafic
-
     meltdegree_peridotite = meltdegree[index_peridotite]
 
     temperature_peridotite = temperature[index_peridotite]
@@ -665,28 +1076,80 @@ def run_peridotite_model():
     newy_tem = temperature_peridotite
     newy_pre = pressure_peridotite
 
-    newy_pt = 1000*newy_pre/newy_tem
+    newy_pt = newy_tem/1000
 
     X_train, X_test, y_train, y_test = train_test_split(
         newX, newy_pt, train_size=0.8, random_state=0)
 
     model = Sequential()
 
-    model.add(Dense(30, input_shape=(10,)))
-    model.add(Dense(30, activation='softsign'))
+    # for temperature
+    model.add(Dense(100, activation='softsign'))
+
+    model.add(Dense(100, activation='elu'))  # 0.88
+    model.add(Dense(100, activation='relu'))  # 0.88
+    model.add(Dense(100, activation='relu'))  # 0.88
+
+    model.add(Dense(100, activation='relu'))  # 0.88
 
     model.add(Dense(1, activation='linear'))
-    #model.add(Dense(1, activation='softplus'))
 
     model.compile(optimizer='rmsprop',
                   loss='mean_squared_error')
 
     hist = model.fit(X_train, y_train,
-                     batch_size=30, epochs=100,
+                     batch_size=20, epochs=200,
                      validation_data=(X_test, y_test))
 
-    # ------------------------------------------------------------input the new sample
-    # here input the example
+    # --------------------------------------------accurancy
+
+    y_pred = model.predict(newX)
+    y_pred = y_pred.flatten()
+    y_train = newy_pt.flatten()
+
+    rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
+
+    # ========================================================================================================
+    # ========================================================================================================
+    # peridotite  pressure
+
+    newy_pt = newy_pre
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        newX, newy_pt, train_size=0.8, random_state=0)
+
+    modelp = Sequential()
+
+    # for temperature
+    modelp.add(Dense(100, activation='softsign'))
+    modelp.add(Dense(100, activation='softsign'))
+
+    # modelp.add(Dense(100, activation='relu')) # 0.88
+    # modelp.add(Dense(100, activation='relu')) # 0.88
+
+    # modelp.add(Dense(100, activation='relu')) # 0.88
+
+    modelp.add(Dense(1, activation='linear'))
+
+    modelp.compile(optimizer='rmsprop',
+                   loss='mean_squared_error')
+
+    histp = modelp.fit(X_train, y_train,
+                       batch_size=20, epochs=200,
+                       validation_data=(X_test, y_test))
+
+    # --------------------------------------------accurancy
+
+    yp_pred = modelp.predict(newX)
+    yp_pred = yp_pred.flatten()
+
+    yp_train = newy_pt.flatten()
+
+    rmsep = math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
+
+    # --------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------
+    # read natural example
 
     data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
 
@@ -698,28 +1161,185 @@ def run_peridotite_model():
         for j in range(0, 10):
             Naturedata[i][j] = data2.iloc[i, j]
 
-    y_compare = model.predict(Naturedata)
-    y_compare = y_compare.flatten()
-
-    # plt.savefig('compare_lee_scatter.png',dpi=300)
-    # ------------------------version 2
+    T = model.predict(Naturedata)
+    P = modelp.predict(Naturedata)
 
     plt.figure()
-    # histtype='step',
 
-    n, bins, patches = plt.hist(
-        y_compare, 15, density=False, facecolor='k', edgecolor='k', alpha=0.8, linewidth=2)
+    # plot error bar
+    plt.errorbar(T*1000, P, xerr=rmse*1000, yerr=rmsep, fmt='o', mfc='b',
+                 mec='k', ecolor='k', elinewidth=1, capthick=1, capsize=0)
+    ax = plt.gca()
 
-    plt.xlabel('Predicted P/T (MPa/℃)', fontsize=12)
-    plt.ylabel('Number', fontsize=12)
-    plt.xticks(fontsize=14)
-    plt.yticks(fontsize=14)
+    plt.xlim(1000, 1800)
+    plt.ylim(0, 7)
 
-    plt.xlim(0.5, 4)
-    global array_for_peridotite
-    array_for_peridotite = y_compare
+    ax.invert_yaxis()
+    plt.ylabel('Pressure (GPa)')
+    ax.xaxis.set_ticks_position('top')  # 将x轴的位置设置在顶部
+
+    #ax.set_xticklabels(row_labels, minor=False)
+
+    ax.set_xlabel('Temperature (℃)')
+    ax.xaxis.set_label_position('top')
+
+    global array_for_peridotite_pressure
+    global array_for_peridotite_temperature
+    array_for_peridotite_temperature = T
+    array_for_peridotite_pressure = P
+
     return plt
-    # plt.savefig('compare_lee_histogram.png',dpi=300)
+
+    # data = pd.read_excel(
+    #     'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1)
+
+    # # change into the data we need float
+    # # train data determined from dataframe
+    # Traindata = np.zeros((915, 10))
+    # for i in range(0, 915):
+    #     for j in range(0, 10):
+    #         Traindata[i][j] = data.iloc[i+1, j+6]
+
+    # # change nan into 0
+    # for i in range(0, 915):
+    #     for j in range(0, 10):
+    #         if (np.isnan(Traindata[i][j])):
+    #             Traindata[i][j] = 0
+
+    # # lable from dataframe
+    # Group = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     Group[i] = data.iloc[i+1, 24]
+
+    # # melting degree
+    # meltdegree = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     meltdegree[i] = data.iloc[i+1, 3]
+
+    # # temperature
+    # temperature = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     temperature[i] = data.iloc[i+1, 2]
+
+    # # pressure
+    # pressure = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     pressure[i] = data.iloc[i+1, 1]
+
+    # # dry or not from dataframe
+    # # 1 is hydrous  0 is anhydrous
+    # Hydrous = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     Hydrous[i] = data.iloc[i+1, 29]
+
+    # index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
+    # #index1 = np.where(Group == 1)
+
+    # index_peridotite = index1[0]
+
+    # index2 = np.where((Group == 2) & (Hydrous == 1))
+    # index_transition = index2[0]
+
+    # #index3 = np.where((Group == 3) & (Hydrous==1))
+    # index3 = np.where(Group == 3)
+    # index_mafic = index3[0]
+
+    # # -------------------------------------------------------
+    # # =============================================================================
+    # # X = Traindata
+    # # y = Group
+    # #
+    # #
+    # #
+    # #
+    # # newX=X
+    # # newy=y
+    # #
+    # # X_train, X_test, y_train, y_test = train_test_split(newX, newy, train_size=0.9, random_state = 0)
+    # #
+    # #
+    # # clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(20, 20), random_state=1)
+    # #
+    # #
+    # # clf = clf.fit(X_train, y_train)
+    # #
+    # # =============================================================================
+
+    # # here we only consider mafic based on the data size
+    # # mafic
+
+    # meltdegree_peridotite = meltdegree[index_peridotite]
+
+    # temperature_peridotite = temperature[index_peridotite]
+
+    # pressure_peridotite = pressure[index_peridotite]
+
+    # X_peridotite = Traindata[index_peridotite]  # traning data for mafic
+
+    # # =============================================================================
+    # # peridotite
+
+    # newX = X_peridotite
+    # # newy=md_label2
+    # # newy=tem_label2
+    # newy_tem = temperature_peridotite
+    # newy_pre = pressure_peridotite
+
+    # newy_pt = 1000*newy_pre/newy_tem
+
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     newX, newy_pt, train_size=0.8, random_state=0)
+
+    # model = Sequential()
+
+    # model.add(Dense(30, input_shape=(10,)))
+    # model.add(Dense(30, activation='softsign'))
+
+    # model.add(Dense(1, activation='linear'))
+    # #model.add(Dense(1, activation='softplus'))
+
+    # model.compile(optimizer='rmsprop',
+    #               loss='mean_squared_error')
+
+    # hist = model.fit(X_train, y_train,
+    #                  batch_size=30, epochs=100,
+    #                  validation_data=(X_test, y_test))
+
+    # # ------------------------------------------------------------input the new sample
+    # # here input the example
+
+    # data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+
+    # # train data determined from dataframe
+
+    # Num_data = len(data2)
+    # Naturedata = np.zeros((Num_data, 10))
+    # for i in range(0, Num_data):
+    #     for j in range(0, 10):
+    #         Naturedata[i][j] = data2.iloc[i, j]
+
+    # y_compare = model.predict(Naturedata)
+    # y_compare = y_compare.flatten()
+
+    # # plt.savefig('compare_lee_scatter.png',dpi=300)
+    # # ------------------------version 2
+
+    # plt.figure()
+    # # histtype='step',
+
+    # n, bins, patches = plt.hist(
+    #     y_compare, 15, density=False, facecolor='k', edgecolor='k', alpha=0.8, linewidth=2)
+
+    # plt.xlabel('Predicted P/T (MPa/℃)', fontsize=12)
+    # plt.ylabel('Number', fontsize=12)
+    # plt.xticks(fontsize=14)
+    # plt.yticks(fontsize=14)
+
+    # plt.xlim(0.5, 4)
+    # global array_for_peridotite
+    # array_for_peridotite = y_compare
+    # return plt
+    # # plt.savefig('compare_lee_histogram.png',dpi=300)
 
 
 def listToString(s):
@@ -731,39 +1351,82 @@ def listToString(s):
 
 
 def run_modify_excel():
+    global array_for_peridotite_temperature
+    global array_for_mafic_temperature
+    global array_for_transitional_temperature
+    global array_for_peridotite_pressure
+    global array_for_mafic_pressure
+    global array_for_transitional_pressure
+    array_for_peridotite_temperature = np.concatenate(
+        array_for_peridotite_temperature, axis=0)
+    array_for_mafic_temperature = np.concatenate(
+        array_for_mafic_temperature, axis=0)
+    array_for_transitional_temperature = np.concatenate(
+        array_for_transitional_temperature, axis=0)
+    array_for_peridotite_pressure = np.concatenate(
+        array_for_peridotite_pressure, axis=0)
+    array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
+    array_for_transitional_pressure = np.concatenate(
+        array_for_transitional_pressure, axis=0)
+
     theFile = openpyxl.load_workbook('example.xlsx')
     arr = theFile.sheetnames
     # print(arr[0])
     currentSheet = theFile[arr[0]]
     print(currentSheet['B4'].value)
-    currentSheet['L1'] = "Peridotite"
-    currentSheet['M1'] = "Mafic"
-    currentSheet['N1'] = "Transitional"
+    currentSheet['L1'] = "Peridotite Pressure"
+    currentSheet['M1'] = "Peridotite Temperature"
+    currentSheet['N1'] = "Mafic Pressure"
+    currentSheet['O1'] = "Mafic Temperature"
+    currentSheet['P1'] = "Transitional Pressure"
+    currentSheet['Q1'] = "Transitional Temperature"
     # currentSheet['M2'] = listToString(sample_array)
     marker_row = ""
-    for i in range(0, len(array_for_peridotite)):
+    for i in range(0, len(array_for_peridotite_pressure)):
         current_column = "L"
         current_row = str(i+2)
         current_location = current_column + current_row
-        currentSheet[current_location] = array_for_peridotite[i]
+        currentSheet[current_location] = array_for_peridotite_pressure[i]
         marker_row = current_row
 
-    for i in range(0, len(array_for_mafic)):
+    for i in range(0, len(array_for_peridotite_temperature)):
         current_column = "M"
         current_row = str(i+2)
         current_location = current_column + current_row
-        currentSheet[current_location] = array_for_mafic[i]
+        currentSheet[current_location] = array_for_peridotite_temperature[i]
         marker_row = current_row
 
-    for i in range(0, len(array_for_transitional)):
+    for i in range(0, len(array_for_mafic_pressure)):
         current_column = "N"
         current_row = str(i+2)
         current_location = current_column + current_row
-        currentSheet[current_location] = array_for_transitional[i]
+        currentSheet[current_location] = array_for_mafic_pressure[i]
+        marker_row = current_row
+
+    for i in range(0, len(array_for_mafic_temperature)):
+        current_column = "O"
+        current_row = str(i+2)
+        current_location = current_column + current_row
+        currentSheet[current_location] = array_for_mafic_temperature[i]
+        marker_row = current_row
+
+    for i in range(0, len(array_for_transitional_pressure)):
+        current_column = "P"
+        current_row = str(i+2)
+        current_location = current_column + current_row
+        currentSheet[current_location] = array_for_transitional_pressure[i]
+        marker_row = current_row
+
+    for i in range(0, len(array_for_transitional_temperature)):
+        current_column = "Q"
+        current_row = str(i+2)
+        current_location = current_column + current_row
+        currentSheet[current_location] = array_for_transitional_temperature[i]
         marker_row = current_row
 
     marker_location = "L"+str(int(marker_row)+1)
     theFile.save("./static/result.xlsx")
+    return 'a string'
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -778,7 +1441,7 @@ def index():
         if input_file.filename != '':
             input_file.save("example.xlsx")
             runpy.run_path(path_name='ANN_classification_web.py')
-    print(array_for_peridotite)
+    # print(array_for_peridotite)
     return render_template("index.html")
 
 
@@ -791,7 +1454,7 @@ def fig():
         img.seek(0)
         # os.remove("example.xlsx")  # remove Excel from file system after use
         return send_file(img, mimetype='image/png')
-    return
+    return 'a string'
 
 
 @app.route('/transitional')
@@ -803,7 +1466,7 @@ def transitional():
         img.seek(0)
         # os.remove("example.xlsx")  # remove Excel from file system after use
         return send_file(img, mimetype='image/png')
-    return 0
+    return 'a string'
 
 
 @app.route('/mafic')
@@ -816,7 +1479,7 @@ def mafic():
         img.seek(0)
         # os.remove("example.xlsx")  # remove Excel from file system after use
         return send_file(img, mimetype='image/png')
-    return 0
+    return 'a string'
 
 
 @app.route('/peridotite')
@@ -828,10 +1491,29 @@ def peridotite():
         img.seek(0)
         # os.remove("example.xlsx")  # remove Excel from file system after use
         return send_file(img, mimetype='image/png')
-    return 0
+    return 'a string'
 
 
-print("Sample text")
+# @app.errorhandler(404)
+# def not_found_error(error):
+#     return render_template('404.html'), 404
+
+@app.errorhandler(404)
+def resource_not_found(e):
+    return jsonify(error=str(e)), 404
+
+
+# @app.errorhandler(500)
+# def internal(e):
+#     return jsonify(error=str(e)), 500
+
+# Handling error 500 and displaying relevant web page
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template("500.html")
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug = True)
