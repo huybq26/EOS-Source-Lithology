@@ -9,3 +9,7 @@ Run in production mode:
 Run in debug mode: 
 
 ### `python app.py` 
+
+Deployment note:
+
+The default excel reading engine is not openpyxl but something else. Hence, need to specify the engine in each read_excel function.
