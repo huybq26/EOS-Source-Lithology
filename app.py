@@ -38,7 +38,7 @@ array_for_transitional_pressure = []
 
 def run_first_model():
     data = pd.read_excel('data2_check.xlsx', header=None,
-                         skipfooter=1, index_col=1)
+                         skipfooter=1, index_col=1, engine='openpyxl')
 
     # change into the data we need float
     # train data determined from dataframe
@@ -104,7 +104,8 @@ def run_first_model():
     # ------------------------------------------------------------------------------------------
     # read data from example
 
-    data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+    data2 = pd.read_excel('./file/example.xlsx', header=0,
+                          index_col=0, engine='openpyxl')
 
     # train data determined from dataframe
 
@@ -167,7 +168,7 @@ def run_first_model():
 
 def run_transitional_model():
     data = pd.read_excel(
-        'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1)
+        'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1, engine='openpyxl')
 
     # change into the data we need float
     # train data determined from dataframe
@@ -334,7 +335,8 @@ def run_transitional_model():
     # --------------------------------------------------------------------------------------
     # read natural example
 
-    data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+    data2 = pd.read_excel('./file/example.xlsx', header=0,
+                          index_col=0, engine='openpyxl')
 
     # train data determined from dataframe
 
@@ -571,7 +573,7 @@ def run_transitional_model():
 
     # # here input the example
 
-    # data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+    # data2 = pd.read_excel('./file/example.xlsx', header=0, index_col=0)
 
     # # train data determined from dataframe
 
@@ -607,7 +609,7 @@ def run_transitional_model():
 
 def run_mafic_model():
     data = pd.read_excel('data2_check_dry.xlsx',
-                         header=None, skipfooter=1, index_col=1)
+                         header=None, skipfooter=1, index_col=1, engine='openpyxl')
     # change into the data we need float
     # train data determined from dataframe
     Traindata = np.zeros((915, 10))
@@ -796,7 +798,8 @@ def run_mafic_model():
     # --------------------------------------------------------------------------------------
     # read natural example
 
-    data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+    data2 = pd.read_excel('./file/example.xlsx', header=0,
+                          index_col=0, engine='openpyxl')
 
     # train data determined from dataframe
 
@@ -970,7 +973,7 @@ def run_mafic_model():
 #     # ------------------------------------------------------------input the new sample
 #     # here input the example
 
-#     data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+#     data2 = pd.read_excel('./file/example.xlsx', header=0, index_col=0)
 
 #     # train data determined from dataframe
 
@@ -1006,7 +1009,7 @@ def run_mafic_model():
 
 def run_peridotite_model():
     data = pd.read_excel(
-        'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1)
+        'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1, engine='openpyxl')
 
     # change into the data we need float
     # train data determined from dataframe
@@ -1151,7 +1154,8 @@ def run_peridotite_model():
     # --------------------------------------------------------------------------------------
     # read natural example
 
-    data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+    data2 = pd.read_excel('./file/example.xlsx', header=0,
+                          index_col=0, engine='openpyxl')
 
     # train data determined from dataframe
 
@@ -1308,7 +1312,7 @@ def run_peridotite_model():
     # # ------------------------------------------------------------input the new sample
     # # here input the example
 
-    # data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+    # data2 = pd.read_excel('./file/example.xlsx', header=0, index_col=0)
 
     # # train data determined from dataframe
 
@@ -1369,7 +1373,7 @@ def run_modify_excel():
     array_for_transitional_pressure = np.concatenate(
         array_for_transitional_pressure, axis=0)
 
-    theFile = openpyxl.load_workbook('example.xlsx')
+    theFile = openpyxl.load_workbook('./file/example.xlsx')
     arr = theFile.sheetnames
     # print(arr[0])
     currentSheet = theFile[arr[0]]
@@ -1432,14 +1436,14 @@ def run_modify_excel():
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index.html', methods=['GET', 'POST'])
 def index():
-    if os.path.isfile('example.xlsx'):
-        os.remove("example.xlsx")
+    if os.path.isfile('./file/example.xlsx'):
+        os.remove("./file/example.xlsx")
     if os.path.isfile('./static/result.xlsx'):
         os.remove("./static/result.xlsx")
     if request.method == 'POST':
         input_file = request.files["upload-file"]
         if input_file.filename != '':
-            input_file.save("example.xlsx")
+            input_file.save("./file/example.xlsx")
             runpy.run_path(path_name='ANN_classification_web.py')
     # print(array_for_peridotite)
     return render_template("index.html")
@@ -1447,49 +1451,49 @@ def index():
 
 @app.route('/fig')
 def fig():
-    if os.path.isfile('example.xlsx'):
+    if os.path.isfile('./file/example.xlsx'):
         fig = run_first_model()
         img = BytesIO()
         fig.savefig(img)
         img.seek(0)
-        # os.remove("example.xlsx")  # remove Excel from file system after use
+        # os.remove("./file/example.xlsx")  # remove Excel from file system after use
         return send_file(img, mimetype='image/png')
     return 'a string'
 
 
 @app.route('/transitional')
 def transitional():
-    if os.path.isfile('example.xlsx'):
+    if os.path.isfile('./file/example.xlsx'):
         fig = run_transitional_model()
         img = BytesIO()
         fig.savefig(img)
         img.seek(0)
-        # os.remove("example.xlsx")  # remove Excel from file system after use
+        # os.remove("./file/example.xlsx")  # remove Excel from file system after use
         return send_file(img, mimetype='image/png')
     return 'a string'
 
 
 @app.route('/mafic')
 def mafic():
-    if os.path.isfile('example.xlsx'):
+    if os.path.isfile('./file/example.xlsx'):
         fig = run_mafic_model()
         run_modify_excel()
         img = BytesIO()
         fig.savefig(img)
         img.seek(0)
-        # os.remove("example.xlsx")  # remove Excel from file system after use
+        # os.remove("./file/example.xlsx")  # remove Excel from file system after use
         return send_file(img, mimetype='image/png')
     return 'a string'
 
 
 @app.route('/peridotite')
 def peridotite():
-    if os.path.isfile('example.xlsx'):
+    if os.path.isfile('./file/example.xlsx'):
         fig = run_peridotite_model()
         img = BytesIO()
         fig.savefig(img)
         img.seek(0)
-        # os.remove("example.xlsx")  # remove Excel from file system after use
+        # os.remove("./file/example.xlsx")  # remove Excel from file system after use
         return send_file(img, mimetype='image/png')
     return 'a string'
 
@@ -1516,4 +1520,4 @@ def internal_error(error):
 
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    app.run(debug=True)

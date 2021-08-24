@@ -2,7 +2,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Source Lithology</title>
+    <title>Source Lithology and Conditions</title>
 
     <!-- Jquery -->
     <script src="{{url_for('static', filename='js/utils/jquery-3.5.1.min.js')}}"></script>
@@ -22,6 +22,7 @@
       rel="stylesheet"
       href="{{url_for('static', filename='css/index.css')}}"
     />
+    <link rel="icon" href="../static/favicon.ico">
   </head>
 
   <body>
@@ -58,7 +59,7 @@
           <span
             >Please use the provided
             <a
-              href="https://aptimer.wovodat.org/static/data_template.csv"
+              href="https://source.wovodat.org/static/example.xlsx"
               download="data_template.csv"
               >data template</a
             >
@@ -130,7 +131,7 @@
           </div>
           <div style="display: flex; flex-direction: row;">
           <button class="btn" type="submit">
-            Calculate the P/T ratio
+            Calculate pressure & temperature
           </button>
           <a href = '../static/result.xlsx' download='result.xlxs' style="text-decoration: none;">
             <button class = "btn" type="button" style ="margin-left: 10px; background: #099cb3; color: white;">

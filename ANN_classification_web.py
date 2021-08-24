@@ -23,8 +23,8 @@ from sklearn.metrics import mean_squared_error
 
 # -------------------------------------------------------
 # Read the file  dataframe
-data = pd.read_excel('data2_check.xlsx', header=None,
-                     skipfooter=1, index_col=1)
+data = pd.read_excel('./file/data2_check.xlsx',
+                     header=None, skipfooter=1, index_col=1, engine='openpyxl')
 
 # change into the data we need float
 # train data determined from dataframe
@@ -100,7 +100,8 @@ print('Accuracy Neural network of all data:', Same_alldata)
 # ------------------------------------------------------------------------------------------
 # read data from example
 
-data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
+data2 = pd.read_excel('./file/example.xlsx', header=0,
+                      index_col=0, engine='openpyxl')
 
 # train data determined from dataframe
 

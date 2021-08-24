@@ -212,5 +212,6 @@ plt.yticks(fontsize=14)
 
 
 plt.xlim(0.5, 4)
+print("Mafic: ", type(y_compare))
 print("Mafic: ", y_compare)
 # plt.savefig('compare_lee_histogram.png',dpi=300)
