@@ -465,6 +465,36 @@ $(document).ready(function () {
     }
   });
 
+  // $('<img/>')
+  //   .on('load', function () {
+  //     console.log('good!');
+  //     $('#error-text').text('');
+  //     $('#image-display').show();
+  //   })
+  //   .on('error', function () {
+  //     console.log('error!');
+  //     $('#image-display').hide();
+  //     $('#error-text').text('Please upload your excel file');
+  //   });
+  $('#image-container')
+    .imagesLoaded()
+    .always(function (instance) {
+      // console.log('all images loaded');
+    })
+    .done(function (instance) {
+      $('#image-display').show();
+      $('#error-text').text('');
+      console.log('first figure successfully loaded');
+    })
+    .fail(function () {
+      $('#image-display').hide();
+      console.log('all images loaded, at least one is broken');
+      $('#error-text').text('Please upload your excel file');
+    })
+    .progress(function (instance, image) {
+      var result = image.isLoaded ? 'loaded' : 'broken';
+      console.log('image is ' + result + ' for ' + image.img.src);
+    });
   // $('.showbtn').click(function () {
   //   $('.myimgdivshowhide').show();
   // });

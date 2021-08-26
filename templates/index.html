@@ -1,11 +1,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.3, maximum-scale=5.0, minimum-scale=0.3" />
     <title>Source Lithology and Conditions</title>
 
     <!-- Jquery -->
     <script src="{{url_for('static', filename='js/utils/jquery-3.5.1.min.js')}}"></script>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+
 
     <!-- Bootstrap -->
     <link
@@ -55,15 +57,15 @@
         
       <div style= "margin-left: 10px; margin-top: -3px;">
         <p>
-          <b>Upload your data: </b>
+          <b><u>Step 1</u>: Upload data: </b>
           <span
-            >Please use the provided
+            >Please use this
             <a
               href="https://source.wovodat.org/static/example.xlsx"
-              download="data_template.csv"
-              >data template</a
+              download="example.xlsx"
+              >example file</a
             >
-            (.xlsx) to organise your data, and upload the
+            to organise your data, and upload the
             <span style="color: red"> xlsx</span> file using the green button
             below.</span
           >
@@ -95,15 +97,16 @@
         <!-- To show the ANN classification figure -->
         <div
           class="plot"
-          style="display: flex; align-items: center; margin-bottom: 20px; flex-direction: column; margin-top: 10px;"
+          style="display: flex; align-items: center; margin-bottom: 20px; flex-direction: column; margin-top: 10px;  height:420px"
         >
         <div><h5><b>Graph of MgO vs CaO with labels</b></h5></div>
-        <div style = "display: flex;">
-          <img src="{{ url_for('fig') }}" alt=" Please upload your excel file" height="350" />
+        <div id = "image-container" style = "display: flex;">
+          <img id="image-display" src="{{ url_for('fig') }}" alt=" " height="350" />
+          <div id = "error-text"></div>
         </div>
         </div>
         <hr />
-        <p><b>Choose one option: </b></p>
+        <p><b><u>Step 2</u>: Choose one option based on the classification result above: </b></p>
         <form class="calculate-pt">
           <div style="display: flex; flex-direction: column; margin-left: 5px">
             <div style="display: flex; flex-direction: row; margin-bottom: 8px">
