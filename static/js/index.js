@@ -454,20 +454,20 @@ $(document).ready(function () {
       $('#mafic-plot').hide();
       $('#peridotite-plot').hide();
       $('#transitional-plot').show();
-      $('#link').attr('download', 'result-transitional.xlsx');
-      $('#link').attr('href', '../static/result-transitional.xlsx');
+      // $('#link').attr('download', 'result-transitional.xlsx');
+      // $('#link').attr('href', '../static/result-transitional.xlsx');
     } else if (values == 'type=mafic') {
       $('#transitional-plot').hide();
       $('#peridotite-plot').hide();
       $('#mafic-plot').show();
-      $('#link').attr('download', 'result-mafic.xlsx');
-      $('#link').attr('href', '../static/result-mafic.xlsx');
+      // $('#link').attr('download', 'result-mafic.xlsx');
+      // $('#link').attr('href', '../static/result-mafic.xlsx');
     } else if (values == 'type=peridotite') {
       $('#transitional-plot').hide();
       $('#mafic-plot').hide();
       $('#peridotite-plot').show();
-      $('#link').attr('download', 'result-peridotite.xlsx');
-      $('#link').attr('href', '../static/result-peridotite.xlsx');
+      // $('#link').attr('download', 'result-peridotite.xlsx');
+      // $('#link').attr('href', '../static/result-peridotite.xlsx');
     }
   });
 

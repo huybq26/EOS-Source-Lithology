@@ -1356,119 +1356,23 @@ def listToString(s):
     return str1
 
 
-# def run_modify_excel():
-#     global array_for_peridotite_temperature
-#     global array_for_mafic_temperature
-#     global array_for_transitional_temperature
-#     global array_for_peridotite_pressure
-#     global array_for_mafic_pressure
-#     global array_for_transitional_pressure
-#     global nature_data
-#     array_for_peridotite_temperature = np.concatenate(
-#         array_for_peridotite_temperature, axis=0)
-#     array_for_mafic_temperature = np.concatenate(
-#         array_for_mafic_temperature, axis=0)
-#     array_for_transitional_temperature = np.concatenate(
-#         array_for_transitional_temperature, axis=0)
-#     array_for_peridotite_pressure = np.concatenate(
-#         array_for_peridotite_pressure, axis=0)
-#     array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
-#     array_for_transitional_pressure = np.concatenate(
-#         array_for_transitional_pressure, axis=0)
-#     nature_data = np.concatenate(nature_data, axis=0)
-
-#     theFile = openpyxl.load_workbook('./file/example.xlsx')
-#     arr = theFile.sheetnames
-#     # print(arr[0])
-#     currentSheet = theFile[arr[0]]
-#     print(currentSheet['B4'].value)
-#     currentSheet['L1'] = "Peridotite Pressure"
-#     currentSheet['M1'] = "Peridotite Temperature"
-#     currentSheet['N1'] = "Mafic Pressure"
-#     currentSheet['O1'] = "Mafic Temperature"
-#     currentSheet['P1'] = "Transitional Pressure"
-#     currentSheet['Q1'] = "Transitional Temperature"
-#     currentSheet['R1'] = "Classification Result"
-#     # currentSheet['M2'] = listToString(sample_array)
-#     marker_row = ""
-#     for i in range(0, len(array_for_peridotite_pressure)):
-#         current_column = "L"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_peridotite_pressure[i]
-#         marker_row = current_row
-
-#     for i in range(0, len(array_for_peridotite_temperature)):
-#         current_column = "M"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_peridotite_temperature[i]
-#         marker_row = current_row
-
-#     for i in range(0, len(array_for_mafic_pressure)):
-#         current_column = "N"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_mafic_pressure[i]
-#         marker_row = current_row
-
-#     for i in range(0, len(array_for_mafic_temperature)):
-#         current_column = "O"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_mafic_temperature[i]
-#         marker_row = current_row
-
-#     for i in range(0, len(array_for_transitional_pressure)):
-#         current_column = "P"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_transitional_pressure[i]
-#         marker_row = current_row
-
-#     for i in range(0, len(array_for_transitional_temperature)):
-#         current_column = "Q"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_transitional_temperature[i]
-#         marker_row = current_row
-
-#     for i in range(0, len(nature_data)):
-#         current_column = "R"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         if (nature_data[i] == 1):
-#             classification = 'peridotite'
-#         elif(nature_data[i] == 2):
-#             classification = 'transitional'
-#         else:
-#             classification = 'mafic'
-#         #currentSheet[current_location] = nature_data[i]
-#         currentSheet[current_location] = classification
-#         marker_row = current_row
-
-#     marker_location = "L"+str(int(marker_row)+1)
-#     theFile.save("./static/result.xlsx")
-#     return 'a string'
-
-
-def run_modify_excel_transitional():
-    # global array_for_peridotite_temperature
-    # global array_for_mafic_temperature
+def run_modify_excel():
+    global array_for_peridotite_temperature
+    global array_for_mafic_temperature
     global array_for_transitional_temperature
-    # global array_for_peridotite_pressure
-    # global array_for_mafic_pressure
+    global array_for_peridotite_pressure
+    global array_for_mafic_pressure
     global array_for_transitional_pressure
     global nature_data
-    # array_for_peridotite_temperature = np.concatenate(
-    #     array_for_peridotite_temperature, axis=0)
-    # array_for_mafic_temperature = np.concatenate(
-    #     array_for_mafic_temperature, axis=0)
+    array_for_peridotite_temperature = np.concatenate(
+        array_for_peridotite_temperature, axis=0)
+    array_for_mafic_temperature = np.concatenate(
+        array_for_mafic_temperature, axis=0)
     array_for_transitional_temperature = np.concatenate(
         array_for_transitional_temperature, axis=0)
-    # array_for_peridotite_pressure = np.concatenate(
-    #     array_for_peridotite_pressure, axis=0)
-    # array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
+    array_for_peridotite_pressure = np.concatenate(
+        array_for_peridotite_pressure, axis=0)
+    array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
     array_for_transitional_pressure = np.concatenate(
         array_for_transitional_pressure, axis=0)
     nature_data = np.concatenate(nature_data, axis=0)
@@ -1478,266 +1382,368 @@ def run_modify_excel_transitional():
     # print(arr[0])
     currentSheet = theFile[arr[0]]
     print(currentSheet['B4'].value)
-    # currentSheet['L1'] = "Peridotite Pressure"
-    # currentSheet['M1'] = "Peridotite Temperature"
-    # currentSheet['N1'] = "Mafic Pressure"
-    # currentSheet['O1'] = "Mafic Temperature"
-    currentSheet['N1'] = "Transitional Pressure (GPa)"
-    currentSheet['O1'] = "Transitional Temperature (℃)"
-    currentSheet['R1'] = "Classification Result"
-    # currentSheet['M2'] = listToString(sample_array)
-    marker_row = ""
-    # for i in range(0, len(array_for_peridotite_pressure)):
-    #     current_column = "L"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_peridotite_pressure[i]
-    #     marker_row = current_row
-
-    # for i in range(0, len(array_for_peridotite_temperature)):
-    #     current_column = "M"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_peridotite_temperature[i]
-    #     marker_row = current_row
-
-    # for i in range(0, len(array_for_mafic_pressure)):
-    #     current_column = "N"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_mafic_pressure[i]
-    #     marker_row = current_row
-
-    # for i in range(0, len(array_for_mafic_temperature)):
-    #     current_column = "O"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_mafic_temperature[i]
-    #     marker_row = current_row
-
-    for i in range(0, len(array_for_transitional_pressure)):
-        current_column = "N"
-        current_row = str(i+2)
-        current_location = current_column + current_row
-        currentSheet[current_location] = array_for_transitional_pressure[i]*1000
-        marker_row = current_row
-
-    for i in range(0, len(array_for_transitional_temperature)):
-        current_column = "O"
-        current_row = str(i+2)
-        current_location = current_column + current_row
-        currentSheet[current_location] = array_for_transitional_temperature[i]*1000
-        marker_row = current_row
-
-    for i in range(0, len(nature_data)):
-        current_column = "R"
-        current_row = str(i+2)
-        current_location = current_column + current_row
-        if (nature_data[i] == 1):
-            classification = 'Peridotite'
-        elif(nature_data[i] == 2):
-            classification = 'Transitional'
-        else:
-            classification = 'Mafic'
-        #currentSheet[current_location] = nature_data[i]
-        currentSheet[current_location] = classification
-        marker_row = current_row
-
-    marker_location = "L"+str(int(marker_row)+1)
-    theFile.save("./static/result-transitional.xlsx")
-    return 'a string'
-
-
-def run_modify_excel_peridotite():
-    global array_for_peridotite_temperature
-    # global array_for_mafic_temperature
-    # global array_for_transitional_temperature
-    global array_for_peridotite_pressure
-    # global array_for_mafic_pressure
-    # global array_for_transitional_pressure
-    # global nature_data
-    array_for_peridotite_temperature = np.concatenate(
-        array_for_peridotite_temperature, axis=0)
-    # array_for_mafic_temperature = np.concatenate(
-    #     array_for_mafic_temperature, axis=0)
-    # array_for_transitional_temperature = np.concatenate(
-    #     array_for_transitional_temperature, axis=0)
-    array_for_peridotite_pressure = np.concatenate(
-        array_for_peridotite_pressure, axis=0)
-    # array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
-    # array_for_transitional_pressure = np.concatenate(
-    #     array_for_transitional_pressure, axis=0)
-    # nature_data = np.concatenate(nature_data, axis=0)
-
-    theFile = openpyxl.load_workbook('./file/example.xlsx')
-    arr = theFile.sheetnames
-    # print(arr[0])
-    currentSheet = theFile[arr[0]]
-    print(currentSheet['B4'].value)
-    currentSheet['N1'] = "Peridotite Pressure (GPa)"
-    currentSheet['O1'] = "Peridotite Temperature (℃)"
-    # currentSheet['N1'] = "Mafic Pressure"
-    # currentSheet['O1'] = "Mafic Temperature"
-    # currentSheet['P1'] = "Transitional Pressure"
-    # currentSheet['Q1'] = "Transitional Temperature"
+    currentSheet['L1'] = "Peridotite Pressure (GPa)"
+    currentSheet['M1'] = "Peridotite Temperature (℃)"
+    currentSheet['N1'] = "Mafic Pressure (GPa)"
+    currentSheet['O1'] = "Mafic Temperature (℃)"
+    currentSheet['P1'] = "Transitional Pressure (GPa)"
+    currentSheet['Q1'] = "Transitional Temperature (℃)"
     currentSheet['R1'] = "Classification Result"
     # currentSheet['M2'] = listToString(sample_array)
     marker_row = ""
     for i in range(0, len(array_for_peridotite_pressure)):
-        current_column = "N"
+        current_column = "L"
         current_row = str(i+2)
         current_location = current_column + current_row
-        currentSheet[current_location] = array_for_peridotite_pressure[i]*1000
+        currentSheet[current_location] = float(
+            "{0:.2f}".format(round(array_for_peridotite_pressure[i], 2)))
         marker_row = current_row
 
     for i in range(0, len(array_for_peridotite_temperature)):
-        current_column = "O"
+        current_column = "M"
         current_row = str(i+2)
         current_location = current_column + current_row
-        currentSheet[current_location] = array_for_peridotite_temperature[i]*1000
+        currentSheet[current_location] = round(
+            array_for_peridotite_temperature[i]*1000, 0)
         marker_row = current_row
-
-    # for i in range(0, len(array_for_mafic_pressure)):
-    #     current_column = "N"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_mafic_pressure[i]
-    #     marker_row = current_row
-
-    # for i in range(0, len(array_for_mafic_temperature)):
-    #     current_column = "O"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_mafic_temperature[i]
-    #     marker_row = current_row
-
-    # for i in range(0, len(array_for_transitional_pressure)):
-    #     current_column = "P"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_transitional_pressure[i]
-    #     marker_row = current_row
-
-    # for i in range(0, len(array_for_transitional_temperature)):
-    #     current_column = "Q"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_transitional_temperature[i]
-    #     marker_row = current_row
-
-    for i in range(0, len(nature_data)):
-        current_column = "R"
-        current_row = str(i+2)
-        current_location = current_column + current_row
-        if (nature_data[i] == 1):
-            classification = 'Peridotite'
-        elif(nature_data[i] == 2):
-            classification = 'Transitional'
-        else:
-            classification = 'Mafic'
-        #currentSheet[current_location] = nature_data[i]
-        currentSheet[current_location] = classification
-        marker_row = current_row
-
-    marker_location = "L"+str(int(marker_row)+1)
-    theFile.save("./static/result-peridotite.xlsx")
-    return 'a string'
-
-
-def run_modify_excel_mafic():
-    # global array_for_peridotite_temperature
-    global array_for_mafic_temperature
-    # global array_for_transitional_temperature
-    # global array_for_peridotite_pressure
-    global array_for_mafic_pressure
-    # global array_for_transitional_pressure
-    # global nature_data
-    # array_for_peridotite_temperature = np.concatenate(
-    #     array_for_peridotite_temperature, axis=0)
-    array_for_mafic_temperature = np.concatenate(
-        array_for_mafic_temperature, axis=0)
-    # array_for_transitional_temperature = np.concatenate(
-    #     array_for_transitional_temperature, axis=0)
-    # array_for_peridotite_pressure = np.concatenate(
-    #     array_for_peridotite_pressure, axis=0)
-    array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
-    # array_for_transitional_pressure = np.concatenate(
-    #     array_for_transitional_pressure, axis=0)
-    # nature_data = np.concatenate(nature_data, axis=0)
-
-    theFile = openpyxl.load_workbook('./file/example.xlsx')
-    arr = theFile.sheetnames
-    # print(arr[0])
-    currentSheet = theFile[arr[0]]
-    print(currentSheet['B4'].value)
-    # currentSheet['L1'] = "Peridotite Pressure"
-    # currentSheet['M1'] = "Peridotite Temperature"
-    currentSheet['N1'] = "Mafic Pressure (GPa)"
-    currentSheet['O1'] = "Mafic Temperature (℃)"
-    # currentSheet['P1'] = "Transitional Pressure"
-    # currentSheet['Q1'] = "Transitional Temperature"
-    currentSheet['R1'] = "Classification Result"
-    # currentSheet['M2'] = listToString(sample_array)
-    marker_row = ""
-    # for i in range(0, len(array_for_peridotite_pressure)):
-    #     current_column = "L"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_peridotite_pressure[i]
-    #     marker_row = current_row
-
-    # for i in range(0, len(array_for_peridotite_temperature)):
-    #     current_column = "M"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_peridotite_temperature[i]
-    #     marker_row = current_row
 
     for i in range(0, len(array_for_mafic_pressure)):
         current_column = "N"
         current_row = str(i+2)
         current_location = current_column + current_row
-        currentSheet[current_location] = array_for_mafic_pressure[i]*1000
+        currentSheet[current_location] = float(
+            "{0:.2f}".format(round(array_for_mafic_pressure[i]), 2))
         marker_row = current_row
 
     for i in range(0, len(array_for_mafic_temperature)):
         current_column = "O"
         current_row = str(i+2)
         current_location = current_column + current_row
-        currentSheet[current_location] = array_for_mafic_temperature[i]*1000
+        currentSheet[current_location] = round(
+            array_for_mafic_temperature[i]*1000, 0)
         marker_row = current_row
 
-    # for i in range(0, len(array_for_transitional_pressure)):
-    #     current_column = "P"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_transitional_pressure[i]
-    #     marker_row = current_row
+    for i in range(0, len(array_for_transitional_pressure)):
+        current_column = "P"
+        current_row = str(i+2)
+        current_location = current_column + current_row
+        currentSheet[current_location] = float(
+            "{0:.2f}".format(round(array_for_transitional_pressure[i]), 2))
+        marker_row = current_row
 
-    # for i in range(0, len(array_for_transitional_temperature)):
-    #     current_column = "Q"
-    #     current_row = str(i+2)
-    #     current_location = current_column + current_row
-    #     currentSheet[current_location] = array_for_transitional_temperature[i]
-    #     marker_row = current_row
+    for i in range(0, len(array_for_transitional_temperature)):
+        current_column = "Q"
+        current_row = str(i+2)
+        current_location = current_column + current_row
+        currentSheet[current_location] = round(
+            array_for_transitional_temperature[i]*1000)
+        marker_row = current_row
 
     for i in range(0, len(nature_data)):
         current_column = "R"
         current_row = str(i+2)
         current_location = current_column + current_row
         if (nature_data[i] == 1):
-            classification = 'Peridotite'
+            classification = 'peridotite'
         elif(nature_data[i] == 2):
-            classification = 'Transitional'
+            classification = 'transitional'
         else:
-            classification = 'Mafic'
+            classification = 'mafic'
         #currentSheet[current_location] = nature_data[i]
         currentSheet[current_location] = classification
         marker_row = current_row
 
     marker_location = "L"+str(int(marker_row)+1)
-    theFile.save("./static/result-mafic.xlsx")
+    theFile.save("./static/result.xlsx")
     return 'a string'
+
+
+# def run_modify_excel_transitional():
+#     # global array_for_peridotite_temperature
+#     # global array_for_mafic_temperature
+#     global array_for_transitional_temperature
+#     # global array_for_peridotite_pressure
+#     # global array_for_mafic_pressure
+#     global array_for_transitional_pressure
+#     global nature_data
+#     # array_for_peridotite_temperature = np.concatenate(
+#     #     array_for_peridotite_temperature, axis=0)
+#     # array_for_mafic_temperature = np.concatenate(
+#     #     array_for_mafic_temperature, axis=0)
+#     array_for_transitional_temperature = np.concatenate(
+#         array_for_transitional_temperature, axis=0)
+#     # array_for_peridotite_pressure = np.concatenate(
+#     #     array_for_peridotite_pressure, axis=0)
+#     # array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
+#     array_for_transitional_pressure = np.concatenate(
+#         array_for_transitional_pressure, axis=0)
+#     nature_data = np.concatenate(nature_data, axis=0)
+
+#     theFile = openpyxl.load_workbook('./file/example.xlsx')
+#     arr = theFile.sheetnames
+#     # print(arr[0])
+#     currentSheet = theFile[arr[0]]
+#     print(currentSheet['B4'].value)
+#     # currentSheet['L1'] = "Peridotite Pressure"
+#     # currentSheet['M1'] = "Peridotite Temperature"
+#     # currentSheet['N1'] = "Mafic Pressure"
+#     # currentSheet['O1'] = "Mafic Temperature"
+#     currentSheet['N1'] = "Transitional Pressure (GPa)"
+#     currentSheet['O1'] = "Transitional Temperature (℃)"
+#     currentSheet['R1'] = "Classification Result"
+#     # currentSheet['M2'] = listToString(sample_array)
+#     marker_row = ""
+#     # for i in range(0, len(array_for_peridotite_pressure)):
+#     #     current_column = "L"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_peridotite_pressure[i]
+#     #     marker_row = current_row
+
+#     # for i in range(0, len(array_for_peridotite_temperature)):
+#     #     current_column = "M"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_peridotite_temperature[i]
+#     #     marker_row = current_row
+
+#     # for i in range(0, len(array_for_mafic_pressure)):
+#     #     current_column = "N"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_mafic_pressure[i]
+#     #     marker_row = current_row
+
+#     # for i in range(0, len(array_for_mafic_temperature)):
+#     #     current_column = "O"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_mafic_temperature[i]
+#     #     marker_row = current_row
+
+#     for i in range(0, len(array_for_transitional_pressure)):
+#         current_column = "N"
+#         current_row = str(i+2)
+#         current_location = current_column + current_row
+#         currentSheet[current_location] = array_for_transitional_pressure[i]*1000
+#         marker_row = current_row
+
+#     for i in range(0, len(array_for_transitional_temperature)):
+#         current_column = "O"
+#         current_row = str(i+2)
+#         current_location = current_column + current_row
+#         currentSheet[current_location] = array_for_transitional_temperature[i]*1000
+#         marker_row = current_row
+
+#     for i in range(0, len(nature_data)):
+#         current_column = "R"
+#         current_row = str(i+2)
+#         current_location = current_column + current_row
+#         if (nature_data[i] == 1):
+#             classification = 'Peridotite'
+#         elif(nature_data[i] == 2):
+#             classification = 'Transitional'
+#         else:
+#             classification = 'Mafic'
+#         #currentSheet[current_location] = nature_data[i]
+#         currentSheet[current_location] = classification
+#         marker_row = current_row
+
+#     marker_location = "L"+str(int(marker_row)+1)
+#     theFile.save("./static/result-transitional.xlsx")
+#     return 'a string'
+
+
+# def run_modify_excel_peridotite():
+#     global array_for_peridotite_temperature
+#     # global array_for_mafic_temperature
+#     # global array_for_transitional_temperature
+#     global array_for_peridotite_pressure
+#     # global array_for_mafic_pressure
+#     # global array_for_transitional_pressure
+#     # global nature_data
+#     array_for_peridotite_temperature = np.concatenate(
+#         array_for_peridotite_temperature, axis=0)
+#     # array_for_mafic_temperature = np.concatenate(
+#     #     array_for_mafic_temperature, axis=0)
+#     # array_for_transitional_temperature = np.concatenate(
+#     #     array_for_transitional_temperature, axis=0)
+#     array_for_peridotite_pressure = np.concatenate(
+#         array_for_peridotite_pressure, axis=0)
+#     # array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
+#     # array_for_transitional_pressure = np.concatenate(
+#     #     array_for_transitional_pressure, axis=0)
+#     # nature_data = np.concatenate(nature_data, axis=0)
+
+#     theFile = openpyxl.load_workbook('./file/example.xlsx')
+#     arr = theFile.sheetnames
+#     # print(arr[0])
+#     currentSheet = theFile[arr[0]]
+#     print(currentSheet['B4'].value)
+#     currentSheet['N1'] = "Peridotite Pressure (GPa)"
+#     currentSheet['O1'] = "Peridotite Temperature (℃)"
+#     # currentSheet['N1'] = "Mafic Pressure"
+#     # currentSheet['O1'] = "Mafic Temperature"
+#     # currentSheet['P1'] = "Transitional Pressure"
+#     # currentSheet['Q1'] = "Transitional Temperature"
+#     currentSheet['R1'] = "Classification Result"
+#     # currentSheet['M2'] = listToString(sample_array)
+#     marker_row = ""
+#     for i in range(0, len(array_for_peridotite_pressure)):
+#         current_column = "N"
+#         current_row = str(i+2)
+#         current_location = current_column + current_row
+#         currentSheet[current_location] = array_for_peridotite_pressure[i]*1000
+#         marker_row = current_row
+
+#     for i in range(0, len(array_for_peridotite_temperature)):
+#         current_column = "O"
+#         current_row = str(i+2)
+#         current_location = current_column + current_row
+#         currentSheet[current_location] = array_for_peridotite_temperature[i]*1000
+#         marker_row = current_row
+
+#     # for i in range(0, len(array_for_mafic_pressure)):
+#     #     current_column = "N"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_mafic_pressure[i]
+#     #     marker_row = current_row
+
+#     # for i in range(0, len(array_for_mafic_temperature)):
+#     #     current_column = "O"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_mafic_temperature[i]
+#     #     marker_row = current_row
+
+#     # for i in range(0, len(array_for_transitional_pressure)):
+#     #     current_column = "P"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_transitional_pressure[i]
+#     #     marker_row = current_row
+
+#     # for i in range(0, len(array_for_transitional_temperature)):
+#     #     current_column = "Q"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_transitional_temperature[i]
+#     #     marker_row = current_row
+
+#     for i in range(0, len(nature_data)):
+#         current_column = "R"
+#         current_row = str(i+2)
+#         current_location = current_column + current_row
+#         if (nature_data[i] == 1):
+#             classification = 'Peridotite'
+#         elif(nature_data[i] == 2):
+#             classification = 'Transitional'
+#         else:
+#             classification = 'Mafic'
+#         #currentSheet[current_location] = nature_data[i]
+#         currentSheet[current_location] = classification
+#         marker_row = current_row
+
+#     marker_location = "L"+str(int(marker_row)+1)
+#     theFile.save("./static/result-peridotite.xlsx")
+#     return 'a string'
+
+
+# def run_modify_excel_mafic():
+#     # global array_for_peridotite_temperature
+#     global array_for_mafic_temperature
+#     # global array_for_transitional_temperature
+#     # global array_for_peridotite_pressure
+#     global array_for_mafic_pressure
+#     # global array_for_transitional_pressure
+#     # global nature_data
+#     # array_for_peridotite_temperature = np.concatenate(
+#     #     array_for_peridotite_temperature, axis=0)
+#     array_for_mafic_temperature = np.concatenate(
+#         array_for_mafic_temperature, axis=0)
+#     # array_for_transitional_temperature = np.concatenate(
+#     #     array_for_transitional_temperature, axis=0)
+#     # array_for_peridotite_pressure = np.concatenate(
+#     #     array_for_peridotite_pressure, axis=0)
+#     array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
+#     # array_for_transitional_pressure = np.concatenate(
+#     #     array_for_transitional_pressure, axis=0)
+#     # nature_data = np.concatenate(nature_data, axis=0)
+
+#     theFile = openpyxl.load_workbook('./file/example.xlsx')
+#     arr = theFile.sheetnames
+#     # print(arr[0])
+#     currentSheet = theFile[arr[0]]
+#     print(currentSheet['B4'].value)
+#     # currentSheet['L1'] = "Peridotite Pressure"
+#     # currentSheet['M1'] = "Peridotite Temperature"
+#     currentSheet['N1'] = "Mafic Pressure (GPa)"
+#     currentSheet['O1'] = "Mafic Temperature (℃)"
+#     # currentSheet['P1'] = "Transitional Pressure"
+#     # currentSheet['Q1'] = "Transitional Temperature"
+#     currentSheet['R1'] = "Classification Result"
+#     # currentSheet['M2'] = listToString(sample_array)
+#     marker_row = ""
+#     # for i in range(0, len(array_for_peridotite_pressure)):
+#     #     current_column = "L"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_peridotite_pressure[i]
+#     #     marker_row = current_row
+
+#     # for i in range(0, len(array_for_peridotite_temperature)):
+#     #     current_column = "M"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_peridotite_temperature[i]
+#     #     marker_row = current_row
+
+#     for i in range(0, len(array_for_mafic_pressure)):
+#         current_column = "N"
+#         current_row = str(i+2)
+#         current_location = current_column + current_row
+#         currentSheet[current_location] = array_for_mafic_pressure[i]*1000
+#         marker_row = current_row
+
+#     for i in range(0, len(array_for_mafic_temperature)):
+#         current_column = "O"
+#         current_row = str(i+2)
+#         current_location = current_column + current_row
+#         currentSheet[current_location] = array_for_mafic_temperature[i]*1000
+#         marker_row = current_row
+
+#     # for i in range(0, len(array_for_transitional_pressure)):
+#     #     current_column = "P"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_transitional_pressure[i]
+#     #     marker_row = current_row
+
+#     # for i in range(0, len(array_for_transitional_temperature)):
+#     #     current_column = "Q"
+#     #     current_row = str(i+2)
+#     #     current_location = current_column + current_row
+#     #     currentSheet[current_location] = array_for_transitional_temperature[i]
+#     #     marker_row = current_row
+
+#     for i in range(0, len(nature_data)):
+#         current_column = "R"
+#         current_row = str(i+2)
+#         current_location = current_column + current_row
+#         if (nature_data[i] == 1):
+#             classification = 'Peridotite'
+#         elif(nature_data[i] == 2):
+#             classification = 'Transitional'
+#         else:
+#             classification = 'Mafic'
+#         #currentSheet[current_location] = nature_data[i]
+#         currentSheet[current_location] = classification
+#         marker_row = current_row
+
+#     marker_location = "L"+str(int(marker_row)+1)
+#     theFile.save("./static/result-mafic.xlsx")
+#     return 'a string'
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -1745,12 +1751,14 @@ def run_modify_excel_mafic():
 def index():
     if os.path.isfile('./file/example.xlsx'):
         os.remove("./file/example.xlsx")
-    if os.path.isfile('./static/result-mafic.xlsx'):
-        os.remove("./static/result-mafic.xlsx")
-    if os.path.isfile('./static/result-peridotite.xlsx'):
-        os.remove("./static/result-peridotite.xlsx")
-    if os.path.isfile('./static/result-transitional.xlsx'):
-        os.remove("./static/result-transitional.xlsx")
+    # if os.path.isfile('./static/result-mafic.xlsx'):
+    #     os.remove("./static/result-mafic.xlsx")
+    # if os.path.isfile('./static/result-peridotite.xlsx'):
+    #     os.remove("./static/result-peridotite.xlsx")
+    # if os.path.isfile('./static/result-transitional.xlsx'):
+    #     os.remove("./static/result-transitional.xlsx")
+    if os.path.isfile('./static/result.xlsx'):
+        os.remove("./static/result.xlsx")
     if request.method == 'POST':
         input_file = request.files["upload-file"]
         if input_file.filename != '':
@@ -1777,7 +1785,7 @@ def fig():
 def transitional():
     if os.path.isfile('./file/example.xlsx'):
         fig = run_transitional_model()
-        run_modify_excel_transitional()
+        # run_modify_excel_transitional()
         img = BytesIO()
         fig.savefig(img)
         img.seek(0)
@@ -1790,7 +1798,7 @@ def transitional():
 def mafic():
     if os.path.isfile('./file/example.xlsx'):
         fig = run_mafic_model()
-        run_modify_excel_mafic()
+        run_modify_excel()
         img = BytesIO()
         fig.savefig(img)
         img.seek(0)
@@ -1803,7 +1811,7 @@ def mafic():
 def peridotite():
     if os.path.isfile('./file/example.xlsx'):
         fig = run_peridotite_model()
-        run_modify_excel_peridotite()
+        # run_modify_excel_peridotite()
         img = BytesIO()
         fig.savefig(img)
         img.seek(0)
