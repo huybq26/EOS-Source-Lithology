@@ -3,7 +3,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=0.3, maximum-scale=5.0, minimum-scale=0.3" />
     <title>Source Lithology and Conditions</title>
-
+    <meta
+      name="description"
+      content="A web-based tool to analyze Lithology chemical components and conditions"
+    />
     <!-- Jquery -->
     <script src="{{url_for('static', filename='js/utils/jquery-3.5.1.min.js')}}"></script>
     <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
@@ -69,6 +72,8 @@
             <span style="color: red"> xlsx</span> file using the green button
             below.</span
           >
+          <br>
+          <i>*Please make sure that your excel file does not contains space or null value, and replace it with value 0 instead.</i>
         </p>
         <form
           method="POST"
@@ -92,7 +97,8 @@
           </button>
         </form>
         </div>
-        <hr / style = "margin-top: 40px;">
+        <i style = "margin-left: 10px;">  * Please note that it may take more than 1 minute to calculate.</i>
+        <hr / style = "margin-top: 10px;">
 
         <!-- To show the ANN classification figure -->
         <div
@@ -106,7 +112,7 @@
         </div>
         </div>
         <hr />
-        <p><b><u>Step 2</u>: Choose one option based on the classification result above: </b></p>
+        <p><b><u>Step 2</u>: Choose one option based on the classification result above & click "Calculate": </b></p>
         <form class="calculate-pt">
           <div style="display: flex; flex-direction: column; margin-left: 5px">
             <div style="display: flex; flex-direction: row; margin-bottom: 8px">
@@ -136,7 +142,8 @@
           <button class="btn" type="submit">
             Calculate pressure & temperature
           </button>
-          <a href = '../static/result.xlsx' download='result.xlxs' style="text-decoration: none;">
+          <!-- <a id = "link" href = '../static/result.xlsx' download='result.xlxs' style="text-decoration: none;"> -->
+            <a id = "link" style="text-decoration: none;">
             <button class = "btn" type="button" style ="margin-left: 10px; background: #099cb3; color: white;">
             Download result file
           </button>
@@ -145,6 +152,8 @@
         <div style= "margin-bottom: -8px; margin-left: 6px; margin-top: 5px">
           <p>
              <i>*Please just download after the page finish loading.</i>
+             <br>
+             <i>To download with chosen option: Choose one option -> Click "Calculate" button -> Click "Download"</i>
           </p>
          
         </div>
