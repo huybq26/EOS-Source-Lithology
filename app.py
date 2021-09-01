@@ -35,6 +35,12 @@ array_for_peridotite_pressure = []
 array_for_mafic_pressure = []
 array_for_transitional_pressure = []
 nature_data = []
+rmse_mafic = 0
+rmse_transitional = 0
+rmse_peridotite = 0
+rmsep_mafic = 0
+rmsep_transitional = 0
+rmsep_peridotite = 0
 
 
 def run_first_model():
@@ -298,6 +304,8 @@ def run_transitional_model():
     y_train = newy_pt.flatten()
 
     rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
+    global rmse_transitional
+    rmse_transitional = rmse
     print('RMSE= %6.2f  ' % rmse)
 
     # =============================================================================
@@ -373,240 +381,9 @@ def run_transitional_model():
     global array_for_transitional_temperature
     array_for_transitional_temperature = T
     array_for_transitional_pressure = P
+    global rmsep_transitional
+    rmsep_transitional = rmsep
     return plt
-
-    # data = pd.read_excel(
-    #     'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1)
-
-    # # change into the data we need float
-    # # train data determined from dataframe
-    # Traindata = np.zeros((915, 10))
-    # for i in range(0, 915):
-    #     for j in range(0, 10):
-    #         Traindata[i][j] = data.iloc[i+1, j+6]
-
-    # # change nan into 0
-    # for i in range(0, 915):
-    #     for j in range(0, 10):
-    #         if (np.isnan(Traindata[i][j])):
-    #             Traindata[i][j] = 0
-
-    # # lable from dataframe
-    # Group = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     Group[i] = data.iloc[i+1, 24]
-
-    # # melting degree
-    # meltdegree = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     meltdegree[i] = data.iloc[i+1, 3]
-
-    # # temperature
-    # temperature = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     temperature[i] = data.iloc[i+1, 2]
-
-    # # pressure
-    # pressure = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     pressure[i] = data.iloc[i+1, 1]
-
-    # # dry or not from dataframe
-    # # 1 is hydrous  0 is anhydrous
-    # Hydrous = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     Hydrous[i] = data.iloc[i+1, 29]
-
-    # index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
-    # #index1 = np.where(Group == 1)
-
-    # index_peridotite = index1[0]
-
-    # index2 = np.where((Group == 2) & (Hydrous == 1))
-    # index_transition = index2[0]
-
-    # #index3 = np.where((Group == 3) & (Hydrous==1))
-    # index3 = np.where(Group == 3)
-    # index_mafic = index3[0]
-
-    # # -------------------------------------------------------
-    # # =============================================================================
-    # # X = Traindata
-    # # y = Group
-    # #
-    # #
-    # #
-    # #
-    # # newX=X
-    # # newy=y
-    # #
-    # # X_train, X_test, y_train, y_test = train_test_split(newX, newy, train_size=0.9, random_state = 0)
-    # #
-    # #
-    # # clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(20, 20), random_state=1)
-    # #
-    # #
-    # # clf = clf.fit(X_train, y_train)
-    # #
-    # # =============================================================================
-
-    # # here we only consider mafic based on the data size
-    # # mafic
-    # # this part will change based on the user select
-
-    # meltdegree_mafic = meltdegree[index_transition]
-
-    # temperature_mafic = temperature[index_transition]
-
-    # pressure_mafic = pressure[index_transition]
-
-    # X_mafic = Traindata[index_transition]  # traning data for mafic
-
-    # hydrous_mafic = Hydrous[index_transition]
-
-    # # =============================================================================
-    # # mafic
-
-    # newX = X_mafic
-    # # newy=md_label
-    # # newy=tem_label
-    # newy_md = meltdegree_mafic
-    # newy_tem = temperature_mafic
-    # newy_pre = pressure_mafic
-
-    # newy_pt = 1000*newy_pre/newy_tem
-
-    # # =============================================================================
-    # # model = Sequential([
-    # #     Dense(10, activation='relu', input_shape=(10,)),
-    # #     Dense(10, activation='relu'),
-    # #     Dense(1, activation='sigmoid'),
-    # # ])
-    # #
-    # #
-    # # model.compile(loss='mean_squared_error', optimizer='adam')
-    # # =============================================================================
-
-    # X_train, X_test, y_train, y_test = train_test_split(
-    #     newX, newy_pt, train_size=0.8, random_state=0)
-
-    # model = Sequential()
-
-    # model.add(Dense(100, input_shape=(10,)))
-    # model.add(Dense(100, activation='softsign'))  # 0.88
-    # model.add(Dense(100, activation='softsign'))  # 0.88
-
-    # # model.add(Dense(100, activation='tanh')) # 0.88
-
-    # # tanh,exponential,linear
-    # #model.add(Dense(1, activation='linear'))
-    # #model.add(Dense(1, activation='softplus'))
-    # model.add(Dense(1, activation='linear'))
-
-    # model.compile(optimizer='rmsprop',
-    #               loss='mean_squared_error')
-
-    # hist = model.fit(X_train, y_train,
-    #                  batch_size=30, epochs=200,
-    #                  validation_data=(X_test, y_test))
-
-    # # ----------------------------------------------loss
-    # plt.plot(hist.history['loss'])
-    # plt.plot(hist.history['val_loss'])
-    # plt.title('Model loss')
-    # plt.ylabel('Loss')
-    # plt.xlabel('Epoch')
-    # plt.legend(['Train', 'Test'], loc='upper right')
-    # # plt.show()
-
-    # # --------------------------------------------accurancy
-
-    # plt.figure()
-
-    # y_pred = model.predict(newX)
-    # y_pred = y_pred.flatten()
-
-    # y_train = newy_pt.flatten()
-
-    # r, s = stats.pearsonr(y_pred, y_train)
-
-    # my = sum(y_train)/len(y_train)
-
-    # r2_1 = 1-sum((y_pred-y_train)**2)/sum((y_train-my)**2)
-    # print('${R_2}$= %6.2f  ' % r2_1)
-
-    # rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
-    # print('RMSE= %6.2f  ' % rmse)
-
-    # # ---------------------------------------------------figure1  transtional
-
-    # plt.scatter(y_train, y_pred, marker='o', facecolor='g', edgecolor='k')
-
-    # #plt.legend(['Volatile-free and hydrous','Carbonated'], loc='upper left')
-    # #name=('Overall data: ${R^2}$= %6.2f,    RMSE=%6.2f' %(r2_1, rmse))
-    # #name=('Overall data: R= %6.2f,    RMSE=%6.2f MPa/℃' %(r, rmse))
-
-    # # plt.title(name)
-    # plt.text(1, 5, 'Volatile-free and hydrous\nT=850-1600℃\nP=0.5-6 GPa',
-    #          fontsize=11, weight='bold')
-    # #name_anhy=('${R^2}$= %6.2f\nRMSE=%6.2f' %(r2_anhy, rmse_anhy))
-    # name = ('R= %6.2f\nRMSE=%6.2f MPa/℃' % (r, rmse))
-    # plt.text(1, 4.1, name)
-
-    # plt.title('Transitional')
-
-    # # plt.text(1.2,0.2,name)
-    # plt.ylabel('Predicted P/T (MPa/℃)', fontsize=12)
-    # plt.xlabel('Experimental P/T (MPa/℃)', fontsize=12)
-    # plt.xticks(fontsize=12)
-    # plt.yticks(fontsize=12)
-
-    # plt.plot([0, 11], [0, 11], 'k-')  # p/t
-    # plt.plot([0, 11], [0.5, 11.5], 'k--')  # p/t
-    # plt.plot([0, 11], [-0.5, 10.5], 'k--')  # p/t
-
-    # plt.text(5.5, 6.7, '+0.5')
-    # plt.text(6.6, 5.8, '-0.5')
-
-    # plt.xlim(0, 7)
-    # plt.ylim(0, 7)
-
-    # # ------------------------------------------------------------------------------
-
-    # # here input the example
-
-    # data2 = pd.read_excel('./file/example.xlsx', header=0, index_col=0)
-
-    # # train data determined from dataframe
-
-    # Num_data = len(data2)
-    # Naturedata = np.zeros((Num_data, 10))
-    # for i in range(0, Num_data):
-    #     for j in range(0, 10):
-    #         Naturedata[i][j] = data2.iloc[i, j]
-
-    # y_compare = model.predict(Naturedata)
-    # y_compare = y_compare.flatten()
-
-    # # plt.savefig('compare_lee_scatter.png',dpi=300)
-    # # ------------------------version 2
-
-    # plt.figure()
-    # # histtype='step',
-
-    # n, bins, patches = plt.hist(y_compare, 15, density=False,
-    #                             facecolor='k', edgecolor='k', alpha=0.8, linewidth=2)
-
-    # plt.xlabel('Predicted P/T (MPa/℃)', fontsize=12)
-    # plt.ylabel('Number', fontsize=12)
-    # plt.xticks(fontsize=14)
-    # plt.yticks(fontsize=14)
-
-    # plt.xlim(0.5, 4)
-    # global array_for_transitional
-    # array_for_transitional = y_compare
-    # return plt
-    # # plt.savefig('compare_lee_histogram.png',dpi=300)
 
 
 def run_mafic_model():
@@ -837,176 +614,11 @@ def run_mafic_model():
     global array_for_mafic_temperature
     array_for_mafic_temperature = T
     array_for_mafic_pressure = P
+    global rmse_mafic
+    rmse_mafic = rmse
+    global rmsep_mafic
+    rmsep_mafic = rmsep
     return plt
-#     data = pd.read_excel(
-#         'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1)
-
-#     # change into the data we need float
-#     # train data determined from dataframe
-#     Traindata = np.zeros((915, 10))
-#     for i in range(0, 915):
-#         for j in range(0, 10):
-#             Traindata[i][j] = data.iloc[i+1, j+6]
-
-#     # change nan into 0
-#     for i in range(0, 915):
-#         for j in range(0, 10):
-#             if (np.isnan(Traindata[i][j])):
-#                 Traindata[i][j] = 0
-
-#     # lable from dataframe
-#     Group = np.zeros((915, 1))
-#     for i in range(0, 915):
-#         Group[i] = data.iloc[i+1, 24]
-
-#     # melting degree
-#     meltdegree = np.zeros((915, 1))
-#     for i in range(0, 915):
-#         meltdegree[i] = data.iloc[i+1, 3]
-
-#     # temperature
-#     temperature = np.zeros((915, 1))
-#     for i in range(0, 915):
-#         temperature[i] = data.iloc[i+1, 2]
-
-#     # pressure
-#     pressure = np.zeros((915, 1))
-#     for i in range(0, 915):
-#         pressure[i] = data.iloc[i+1, 1]
-
-#     # dry or not from dataframe
-#     # 1 is hydrous  0 is anhydrous
-#     Hydrous = np.zeros((915, 1))
-#     for i in range(0, 915):
-#         Hydrous[i] = data.iloc[i+1, 29]
-
-#     index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
-#     #index1 = np.where(Group == 1)
-
-#     index_peridotite = index1[0]
-
-#     index2 = np.where((Group == 2) & (Hydrous == 1))
-#     index_transition = index2[0]
-
-#     #index3 = np.where((Group == 3) & (Hydrous==1))
-#     index3 = np.where(Group == 3)
-#     index_mafic = index3[0]
-
-#     # -------------------------------------------------------
-#     # =============================================================================
-#     # X = Traindata
-#     # y = Group
-#     #
-#     #
-#     #
-#     #
-#     # newX=X
-#     # newy=y
-#     #
-#     # X_train, X_test, y_train, y_test = train_test_split(newX, newy, train_size=0.9, random_state = 0)
-#     #
-#     #
-#     # clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(20, 20), random_state=1)
-#     #
-#     #
-#     # clf = clf.fit(X_train, y_train)
-#     #
-#     # =============================================================================
-
-#     # here we only consider mafic based on the data size
-#     # mafic
-
-#     meltdegree_mafic = meltdegree[index_mafic]
-
-#     temperature_mafic = temperature[index_mafic]
-
-#     pressure_mafic = pressure[index_mafic]
-
-#     X_mafic = Traindata[index_mafic]  # traning data for mafic
-
-#     hydrous_mafic = Hydrous[index_mafic]
-
-#     # =============================================================================
-#     # mafic
-
-#     newX = X_mafic
-#     # newy=md_label
-#     # newy=tem_label
-#     newy_md = meltdegree_mafic
-#     newy_tem = temperature_mafic
-#     newy_pre = pressure_mafic
-
-#     newy_pt = 1000*newy_pre/newy_tem
-
-#     # =============================================================================
-#     # model = Sequential([
-#     #     Dense(10, activation='relu', input_shape=(10,)),
-#     #     Dense(10, activation='relu'),
-#     #     Dense(1, activation='sigmoid'),
-#     # ])
-#     #
-#     #
-#     # model.compile(loss='mean_squared_error', optimizer='adam')
-#     # =============================================================================
-
-#     X_train, X_test, y_train, y_test = train_test_split(
-#         newX, newy_pt, train_size=0.8, random_state=0)
-
-#     model = Sequential()
-
-#     model.add(Dense(100, input_shape=(10,)))
-#     model.add(Dense(100, activation='softsign'))  # 0.88
-#     model.add(Dense(100, activation='softsign'))  # 0.88
-
-#     # model.add(Dense(100, activation='tanh')) # 0.88
-
-#     # tanh,exponential,linear
-#     #model.add(Dense(1, activation='linear'))
-#     #model.add(Dense(1, activation='softplus'))
-#     model.add(Dense(1, activation='linear'))
-
-#     model.compile(optimizer='rmsprop',
-#                   loss='mean_squared_error')
-
-#     hist = model.fit(X_train, y_train,
-#                      batch_size=30, epochs=200,
-#                      validation_data=(X_test, y_test))
-
-#     # ------------------------------------------------------------input the new sample
-#     # here input the example
-
-#     data2 = pd.read_excel('./file/example.xlsx', header=0, index_col=0)
-
-#     # train data determined from dataframe
-
-#     Num_data = len(data2)
-#     Naturedata = np.zeros((Num_data, 10))
-#     for i in range(0, Num_data):
-#         for j in range(0, 10):
-#             Naturedata[i][j] = data2.iloc[i, j]
-
-#     y_compare = model.predict(Naturedata)
-#     y_compare = y_compare.flatten()
-
-#     # plt.savefig('compare_lee_scatter.png',dpi=300)
-#     # ------------------------version 2
-
-#     plt.figure()
-#     # histtype='step',
-
-#     n, bins, patches = plt.hist(
-#         y_compare, 15, density=False, facecolor='k', edgecolor='k', alpha=0.8, linewidth=2)
-
-#     plt.xlabel('Predicted P/T (MPa/℃)', fontsize=12)
-#     plt.ylabel('Number', fontsize=12)
-#     plt.xticks(fontsize=14)
-#     plt.yticks(fontsize=14)
-
-#     plt.xlim(0.5, 4)
-#     global array_for_mafic
-#     array_for_mafic = y_compare
-#     # plt.savefig('compare_lee_histogram.png',dpi=300)
-#     return plt
 
 
 def run_peridotite_model():
@@ -1193,159 +805,11 @@ def run_peridotite_model():
     global array_for_peridotite_temperature
     array_for_peridotite_temperature = T
     array_for_peridotite_pressure = P
-
+    global rmse_peridotite
+    rmse_peridotite = rmse
+    global rmsep_peridotite
+    rmsep_peridotite = rmsep
     return plt
-
-    # data = pd.read_excel(
-    #     'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1)
-
-    # # change into the data we need float
-    # # train data determined from dataframe
-    # Traindata = np.zeros((915, 10))
-    # for i in range(0, 915):
-    #     for j in range(0, 10):
-    #         Traindata[i][j] = data.iloc[i+1, j+6]
-
-    # # change nan into 0
-    # for i in range(0, 915):
-    #     for j in range(0, 10):
-    #         if (np.isnan(Traindata[i][j])):
-    #             Traindata[i][j] = 0
-
-    # # lable from dataframe
-    # Group = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     Group[i] = data.iloc[i+1, 24]
-
-    # # melting degree
-    # meltdegree = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     meltdegree[i] = data.iloc[i+1, 3]
-
-    # # temperature
-    # temperature = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     temperature[i] = data.iloc[i+1, 2]
-
-    # # pressure
-    # pressure = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     pressure[i] = data.iloc[i+1, 1]
-
-    # # dry or not from dataframe
-    # # 1 is hydrous  0 is anhydrous
-    # Hydrous = np.zeros((915, 1))
-    # for i in range(0, 915):
-    #     Hydrous[i] = data.iloc[i+1, 29]
-
-    # index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
-    # #index1 = np.where(Group == 1)
-
-    # index_peridotite = index1[0]
-
-    # index2 = np.where((Group == 2) & (Hydrous == 1))
-    # index_transition = index2[0]
-
-    # #index3 = np.where((Group == 3) & (Hydrous==1))
-    # index3 = np.where(Group == 3)
-    # index_mafic = index3[0]
-
-    # # -------------------------------------------------------
-    # # =============================================================================
-    # # X = Traindata
-    # # y = Group
-    # #
-    # #
-    # #
-    # #
-    # # newX=X
-    # # newy=y
-    # #
-    # # X_train, X_test, y_train, y_test = train_test_split(newX, newy, train_size=0.9, random_state = 0)
-    # #
-    # #
-    # # clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(20, 20), random_state=1)
-    # #
-    # #
-    # # clf = clf.fit(X_train, y_train)
-    # #
-    # # =============================================================================
-
-    # # here we only consider mafic based on the data size
-    # # mafic
-
-    # meltdegree_peridotite = meltdegree[index_peridotite]
-
-    # temperature_peridotite = temperature[index_peridotite]
-
-    # pressure_peridotite = pressure[index_peridotite]
-
-    # X_peridotite = Traindata[index_peridotite]  # traning data for mafic
-
-    # # =============================================================================
-    # # peridotite
-
-    # newX = X_peridotite
-    # # newy=md_label2
-    # # newy=tem_label2
-    # newy_tem = temperature_peridotite
-    # newy_pre = pressure_peridotite
-
-    # newy_pt = 1000*newy_pre/newy_tem
-
-    # X_train, X_test, y_train, y_test = train_test_split(
-    #     newX, newy_pt, train_size=0.8, random_state=0)
-
-    # model = Sequential()
-
-    # model.add(Dense(30, input_shape=(10,)))
-    # model.add(Dense(30, activation='softsign'))
-
-    # model.add(Dense(1, activation='linear'))
-    # #model.add(Dense(1, activation='softplus'))
-
-    # model.compile(optimizer='rmsprop',
-    #               loss='mean_squared_error')
-
-    # hist = model.fit(X_train, y_train,
-    #                  batch_size=30, epochs=100,
-    #                  validation_data=(X_test, y_test))
-
-    # # ------------------------------------------------------------input the new sample
-    # # here input the example
-
-    # data2 = pd.read_excel('./file/example.xlsx', header=0, index_col=0)
-
-    # # train data determined from dataframe
-
-    # Num_data = len(data2)
-    # Naturedata = np.zeros((Num_data, 10))
-    # for i in range(0, Num_data):
-    #     for j in range(0, 10):
-    #         Naturedata[i][j] = data2.iloc[i, j]
-
-    # y_compare = model.predict(Naturedata)
-    # y_compare = y_compare.flatten()
-
-    # # plt.savefig('compare_lee_scatter.png',dpi=300)
-    # # ------------------------version 2
-
-    # plt.figure()
-    # # histtype='step',
-
-    # n, bins, patches = plt.hist(
-    #     y_compare, 15, density=False, facecolor='k', edgecolor='k', alpha=0.8, linewidth=2)
-
-    # plt.xlabel('Predicted P/T (MPa/℃)', fontsize=12)
-    # plt.ylabel('Number', fontsize=12)
-    # plt.xticks(fontsize=14)
-    # plt.yticks(fontsize=14)
-
-    # plt.xlim(0.5, 4)
-    # global array_for_peridotite
-    # array_for_peridotite = y_compare
-    # return plt
-    # # plt.savefig('compare_lee_histogram.png',dpi=300)
 
 
 def listToString(s):
@@ -1383,12 +847,30 @@ def run_modify_excel():
     currentSheet = theFile[arr[0]]
     print(currentSheet['B4'].value)
     currentSheet['L1'] = "Peridotite Pressure (GPa)"
-    currentSheet['M1'] = "Peridotite Temperature (℃)"
-    currentSheet['N1'] = "Mafic Pressure (GPa)"
-    currentSheet['O1'] = "Mafic Temperature (℃)"
-    currentSheet['P1'] = "Transitional Pressure (GPa)"
-    currentSheet['Q1'] = "Transitional Temperature (℃)"
-    currentSheet['R1'] = "Classification Result"
+    currentSheet['M1'] = "Peridotite Pressure Error"
+    currentSheet['M2'] = float(
+        "{0:.2f}".format(round(rmsep_peridotite, 2)))
+    currentSheet['N1'] = "Peridotite Temperature (℃)"
+    currentSheet['O1'] = "Peridotite Temperature Error"
+    currentSheet['O2'] = float(
+        "{0:.2f}".format(round(rmse_peridotite*1000, 2)))
+    currentSheet['P1'] = "Mafic Pressure (GPa)"
+    currentSheet['Q1'] = "Mafic Pressure Error"
+    currentSheet['Q2'] = float(
+        "{0:.2f}".format(round(rmsep_mafic, 2)))
+    currentSheet['R1'] = "Mafic Temperature (℃)"
+    currentSheet['S1'] = "Mafic Temperature Error"
+    currentSheet['S2'] = float(
+        "{0:.2f}".format(round(rmse_mafic*1000, 2)))
+    currentSheet['T1'] = "Transitional Pressure (GPa)"
+    currentSheet['U1'] = "Transitional Pressure Error"
+    currentSheet['U2'] = float(
+        "{0:.2f}".format(round(rmsep_transitional, 2)))
+    currentSheet['V1'] = "Transitional Temperature (℃)"
+    currentSheet['W1'] = "Transitional Temperature Error"
+    currentSheet['W2'] = float(
+        "{0:.2f}".format(round(rmse_transitional*1000, 2)))
+    currentSheet['X1'] = "Classification Result"
     # currentSheet['M2'] = listToString(sample_array)
     marker_row = ""
     for i in range(0, len(array_for_peridotite_pressure)):
@@ -1400,7 +882,7 @@ def run_modify_excel():
         marker_row = current_row
 
     for i in range(0, len(array_for_peridotite_temperature)):
-        current_column = "M"
+        current_column = "N"
         current_row = str(i+2)
         current_location = current_column + current_row
         currentSheet[current_location] = round(
@@ -1408,15 +890,15 @@ def run_modify_excel():
         marker_row = current_row
 
     for i in range(0, len(array_for_mafic_pressure)):
-        current_column = "N"
+        current_column = "P"
         current_row = str(i+2)
         current_location = current_column + current_row
         currentSheet[current_location] = float(
-            "{0:.2f}".format(round(array_for_mafic_pressure[i]), 2))
+            "{0:.2f}".format(round(array_for_mafic_pressure[i], 2)))
         marker_row = current_row
 
     for i in range(0, len(array_for_mafic_temperature)):
-        current_column = "O"
+        current_column = "R"
         current_row = str(i+2)
         current_location = current_column + current_row
         currentSheet[current_location] = round(
@@ -1424,15 +906,15 @@ def run_modify_excel():
         marker_row = current_row
 
     for i in range(0, len(array_for_transitional_pressure)):
-        current_column = "P"
+        current_column = "T"
         current_row = str(i+2)
         current_location = current_column + current_row
         currentSheet[current_location] = float(
-            "{0:.2f}".format(round(array_for_transitional_pressure[i]), 2))
+            "{0:.2f}".format(round(array_for_transitional_pressure[i], 2)))
         marker_row = current_row
 
     for i in range(0, len(array_for_transitional_temperature)):
-        current_column = "Q"
+        current_column = "V"
         current_row = str(i+2)
         current_location = current_column + current_row
         currentSheet[current_location] = round(
@@ -1440,7 +922,7 @@ def run_modify_excel():
         marker_row = current_row
 
     for i in range(0, len(nature_data)):
-        current_column = "R"
+        current_column = "X"
         current_row = str(i+2)
         current_location = current_column + current_row
         if (nature_data[i] == 1):
@@ -1456,294 +938,6 @@ def run_modify_excel():
     marker_location = "L"+str(int(marker_row)+1)
     theFile.save("./static/result.xlsx")
     return 'a string'
-
-
-# def run_modify_excel_transitional():
-#     # global array_for_peridotite_temperature
-#     # global array_for_mafic_temperature
-#     global array_for_transitional_temperature
-#     # global array_for_peridotite_pressure
-#     # global array_for_mafic_pressure
-#     global array_for_transitional_pressure
-#     global nature_data
-#     # array_for_peridotite_temperature = np.concatenate(
-#     #     array_for_peridotite_temperature, axis=0)
-#     # array_for_mafic_temperature = np.concatenate(
-#     #     array_for_mafic_temperature, axis=0)
-#     array_for_transitional_temperature = np.concatenate(
-#         array_for_transitional_temperature, axis=0)
-#     # array_for_peridotite_pressure = np.concatenate(
-#     #     array_for_peridotite_pressure, axis=0)
-#     # array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
-#     array_for_transitional_pressure = np.concatenate(
-#         array_for_transitional_pressure, axis=0)
-#     nature_data = np.concatenate(nature_data, axis=0)
-
-#     theFile = openpyxl.load_workbook('./file/example.xlsx')
-#     arr = theFile.sheetnames
-#     # print(arr[0])
-#     currentSheet = theFile[arr[0]]
-#     print(currentSheet['B4'].value)
-#     # currentSheet['L1'] = "Peridotite Pressure"
-#     # currentSheet['M1'] = "Peridotite Temperature"
-#     # currentSheet['N1'] = "Mafic Pressure"
-#     # currentSheet['O1'] = "Mafic Temperature"
-#     currentSheet['N1'] = "Transitional Pressure (GPa)"
-#     currentSheet['O1'] = "Transitional Temperature (℃)"
-#     currentSheet['R1'] = "Classification Result"
-#     # currentSheet['M2'] = listToString(sample_array)
-#     marker_row = ""
-#     # for i in range(0, len(array_for_peridotite_pressure)):
-#     #     current_column = "L"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_peridotite_pressure[i]
-#     #     marker_row = current_row
-
-#     # for i in range(0, len(array_for_peridotite_temperature)):
-#     #     current_column = "M"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_peridotite_temperature[i]
-#     #     marker_row = current_row
-
-#     # for i in range(0, len(array_for_mafic_pressure)):
-#     #     current_column = "N"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_mafic_pressure[i]
-#     #     marker_row = current_row
-
-#     # for i in range(0, len(array_for_mafic_temperature)):
-#     #     current_column = "O"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_mafic_temperature[i]
-#     #     marker_row = current_row
-
-#     for i in range(0, len(array_for_transitional_pressure)):
-#         current_column = "N"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_transitional_pressure[i]*1000
-#         marker_row = current_row
-
-#     for i in range(0, len(array_for_transitional_temperature)):
-#         current_column = "O"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_transitional_temperature[i]*1000
-#         marker_row = current_row
-
-#     for i in range(0, len(nature_data)):
-#         current_column = "R"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         if (nature_data[i] == 1):
-#             classification = 'Peridotite'
-#         elif(nature_data[i] == 2):
-#             classification = 'Transitional'
-#         else:
-#             classification = 'Mafic'
-#         #currentSheet[current_location] = nature_data[i]
-#         currentSheet[current_location] = classification
-#         marker_row = current_row
-
-#     marker_location = "L"+str(int(marker_row)+1)
-#     theFile.save("./static/result-transitional.xlsx")
-#     return 'a string'
-
-
-# def run_modify_excel_peridotite():
-#     global array_for_peridotite_temperature
-#     # global array_for_mafic_temperature
-#     # global array_for_transitional_temperature
-#     global array_for_peridotite_pressure
-#     # global array_for_mafic_pressure
-#     # global array_for_transitional_pressure
-#     # global nature_data
-#     array_for_peridotite_temperature = np.concatenate(
-#         array_for_peridotite_temperature, axis=0)
-#     # array_for_mafic_temperature = np.concatenate(
-#     #     array_for_mafic_temperature, axis=0)
-#     # array_for_transitional_temperature = np.concatenate(
-#     #     array_for_transitional_temperature, axis=0)
-#     array_for_peridotite_pressure = np.concatenate(
-#         array_for_peridotite_pressure, axis=0)
-#     # array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
-#     # array_for_transitional_pressure = np.concatenate(
-#     #     array_for_transitional_pressure, axis=0)
-#     # nature_data = np.concatenate(nature_data, axis=0)
-
-#     theFile = openpyxl.load_workbook('./file/example.xlsx')
-#     arr = theFile.sheetnames
-#     # print(arr[0])
-#     currentSheet = theFile[arr[0]]
-#     print(currentSheet['B4'].value)
-#     currentSheet['N1'] = "Peridotite Pressure (GPa)"
-#     currentSheet['O1'] = "Peridotite Temperature (℃)"
-#     # currentSheet['N1'] = "Mafic Pressure"
-#     # currentSheet['O1'] = "Mafic Temperature"
-#     # currentSheet['P1'] = "Transitional Pressure"
-#     # currentSheet['Q1'] = "Transitional Temperature"
-#     currentSheet['R1'] = "Classification Result"
-#     # currentSheet['M2'] = listToString(sample_array)
-#     marker_row = ""
-#     for i in range(0, len(array_for_peridotite_pressure)):
-#         current_column = "N"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_peridotite_pressure[i]*1000
-#         marker_row = current_row
-
-#     for i in range(0, len(array_for_peridotite_temperature)):
-#         current_column = "O"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_peridotite_temperature[i]*1000
-#         marker_row = current_row
-
-#     # for i in range(0, len(array_for_mafic_pressure)):
-#     #     current_column = "N"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_mafic_pressure[i]
-#     #     marker_row = current_row
-
-#     # for i in range(0, len(array_for_mafic_temperature)):
-#     #     current_column = "O"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_mafic_temperature[i]
-#     #     marker_row = current_row
-
-#     # for i in range(0, len(array_for_transitional_pressure)):
-#     #     current_column = "P"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_transitional_pressure[i]
-#     #     marker_row = current_row
-
-#     # for i in range(0, len(array_for_transitional_temperature)):
-#     #     current_column = "Q"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_transitional_temperature[i]
-#     #     marker_row = current_row
-
-#     for i in range(0, len(nature_data)):
-#         current_column = "R"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         if (nature_data[i] == 1):
-#             classification = 'Peridotite'
-#         elif(nature_data[i] == 2):
-#             classification = 'Transitional'
-#         else:
-#             classification = 'Mafic'
-#         #currentSheet[current_location] = nature_data[i]
-#         currentSheet[current_location] = classification
-#         marker_row = current_row
-
-#     marker_location = "L"+str(int(marker_row)+1)
-#     theFile.save("./static/result-peridotite.xlsx")
-#     return 'a string'
-
-
-# def run_modify_excel_mafic():
-#     # global array_for_peridotite_temperature
-#     global array_for_mafic_temperature
-#     # global array_for_transitional_temperature
-#     # global array_for_peridotite_pressure
-#     global array_for_mafic_pressure
-#     # global array_for_transitional_pressure
-#     # global nature_data
-#     # array_for_peridotite_temperature = np.concatenate(
-#     #     array_for_peridotite_temperature, axis=0)
-#     array_for_mafic_temperature = np.concatenate(
-#         array_for_mafic_temperature, axis=0)
-#     # array_for_transitional_temperature = np.concatenate(
-#     #     array_for_transitional_temperature, axis=0)
-#     # array_for_peridotite_pressure = np.concatenate(
-#     #     array_for_peridotite_pressure, axis=0)
-#     array_for_mafic_pressure = np.concatenate(array_for_mafic_pressure, axis=0)
-#     # array_for_transitional_pressure = np.concatenate(
-#     #     array_for_transitional_pressure, axis=0)
-#     # nature_data = np.concatenate(nature_data, axis=0)
-
-#     theFile = openpyxl.load_workbook('./file/example.xlsx')
-#     arr = theFile.sheetnames
-#     # print(arr[0])
-#     currentSheet = theFile[arr[0]]
-#     print(currentSheet['B4'].value)
-#     # currentSheet['L1'] = "Peridotite Pressure"
-#     # currentSheet['M1'] = "Peridotite Temperature"
-#     currentSheet['N1'] = "Mafic Pressure (GPa)"
-#     currentSheet['O1'] = "Mafic Temperature (℃)"
-#     # currentSheet['P1'] = "Transitional Pressure"
-#     # currentSheet['Q1'] = "Transitional Temperature"
-#     currentSheet['R1'] = "Classification Result"
-#     # currentSheet['M2'] = listToString(sample_array)
-#     marker_row = ""
-#     # for i in range(0, len(array_for_peridotite_pressure)):
-#     #     current_column = "L"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_peridotite_pressure[i]
-#     #     marker_row = current_row
-
-#     # for i in range(0, len(array_for_peridotite_temperature)):
-#     #     current_column = "M"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_peridotite_temperature[i]
-#     #     marker_row = current_row
-
-#     for i in range(0, len(array_for_mafic_pressure)):
-#         current_column = "N"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_mafic_pressure[i]*1000
-#         marker_row = current_row
-
-#     for i in range(0, len(array_for_mafic_temperature)):
-#         current_column = "O"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         currentSheet[current_location] = array_for_mafic_temperature[i]*1000
-#         marker_row = current_row
-
-#     # for i in range(0, len(array_for_transitional_pressure)):
-#     #     current_column = "P"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_transitional_pressure[i]
-#     #     marker_row = current_row
-
-#     # for i in range(0, len(array_for_transitional_temperature)):
-#     #     current_column = "Q"
-#     #     current_row = str(i+2)
-#     #     current_location = current_column + current_row
-#     #     currentSheet[current_location] = array_for_transitional_temperature[i]
-#     #     marker_row = current_row
-
-#     for i in range(0, len(nature_data)):
-#         current_column = "R"
-#         current_row = str(i+2)
-#         current_location = current_column + current_row
-#         if (nature_data[i] == 1):
-#             classification = 'Peridotite'
-#         elif(nature_data[i] == 2):
-#             classification = 'Transitional'
-#         else:
-#             classification = 'Mafic'
-#         #currentSheet[current_location] = nature_data[i]
-#         currentSheet[current_location] = classification
-#         marker_row = current_row
-
-#     marker_location = "L"+str(int(marker_row)+1)
-#     theFile.save("./static/result-mafic.xlsx")
-#     return 'a string'
 
 
 @app.route('/', methods=['GET', 'POST'])
