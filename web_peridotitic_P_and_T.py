@@ -231,3 +231,20 @@ print(type(T_array))
 # result_array = T_array.flatten()
 # print(result_array)
 # print(type(result_array))
+
+model_json = model.to_json()
+with open("model_temperature_peridotitic.json", "w") as json_file:
+    json_file.write(model_json)
+# serialize weights to HDF5
+model.save_weights("model_temperature_peridotitic.h5")
+print("Saved model to disk")
+
+model_json_pressure = modelp.to_json()
+with open("model_pressure_peridotitic.json", "w") as json_file_2:
+    json_file_2.write(model_json_pressure)
+# serialize weights to HDF5
+modelp.save_weights("model_pressure_peridotitic.h5")
+print("Saved model to disk")
+
+print('rmse is: ', rmse)
+print('rmsep is: ', rmsep)

@@ -6,8 +6,8 @@ Created on Tue Aug 17 11:23:06 2021
 @author: lilucheng
 """
 
-#transitional_web_P_and_T
-#to determine P and T using transitional for web version
+# transitional_web_P_and_T
+# to determine P and T using transitional for web version
 
 
 import math
@@ -17,11 +17,10 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import mean_squared_error 
+from sklearn.metrics import mean_squared_error
 from keras.models import Sequential
 from keras.layers import Dense
 import scipy.stats as stats
-
 
 
 data = pd.read_excel(
@@ -64,26 +63,23 @@ for i in range(0, 915):
     pressure[i] = data.iloc[i+1, 1]
 
 # dry or not from dataframe
-#1 is hydrous  0 is anhydrous
+# 1 is hydrous  0 is anhydrous
 Hydrous = np.zeros((915, 1))
 for i in range(0, 915):
     Hydrous[i] = data.iloc[i+1, 29]
 
 
-index1 = np.where((Group == 1) & (Hydrous==1))  #hydrous
+index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
 #index1 = np.where(Group == 1)
 
 index_peridotite = index1[0]
 
-index2 = np.where((Group == 2) & (Hydrous==1))
+index2 = np.where((Group == 2) & (Hydrous == 1))
 index_transition = index2[0]
 
 #index3 = np.where((Group == 3) & (Hydrous==1))
 index3 = np.where(Group == 3)
 index_mafic = index3[0]
-
-
-
 
 
 meltdegree_transition = meltdegree[index_transition]
@@ -95,7 +91,7 @@ pressure_transition = pressure[index_transition]
 
 X_transition = Traindata[index_transition]  # traning data for mafic
 
-hydrous_transition=Hydrous[index_transition]
+hydrous_transition = Hydrous[index_transition]
 
 
 # =============================================================================
@@ -104,13 +100,13 @@ hydrous_transition=Hydrous[index_transition]
 newX = X_transition
 # newy=md_label
 # newy=tem_label
-newy_md=meltdegree_transition
+newy_md = meltdegree_transition
 newy_tem = temperature_transition
-newy_pre=pressure_transition
+newy_pre = pressure_transition
 
-#newy_pt=1000*newy_pre/newy_tem
+# newy_pt=1000*newy_pre/newy_tem
 
-newy_pt=newy_tem/1000
+newy_pt = newy_tem/1000
 
 # =============================================================================
 # model = Sequential([
@@ -124,38 +120,36 @@ newy_pt=newy_tem/1000
 # =============================================================================
 
 
-
 X_train, X_test, y_train, y_test = train_test_split(
     newX, newy_pt, train_size=0.8, random_state=0)
-
 
 
 model = Sequential()
 
 
-#for p/t
+# for p/t
 #model.add(Dense(100, input_shape=(10,)))
-#model.add(Dense(100, activation='softsign')) # 0.88
-#model.add(Dense(100, activation='softsign')) # 0.88
+# model.add(Dense(100, activation='softsign')) # 0.88
+# model.add(Dense(100, activation='softsign')) # 0.88
 #model.add(Dense(1, activation='linear'))
 
 
-#for temperature
-model.add(Dense(100,activation='softsign') )
+# for temperature
+model.add(Dense(100, activation='softsign'))
 
-#model.add(Dense(100, activation='elu')) # 0.88
-model.add(Dense(100, activation='relu')) # 0.88
-model.add(Dense(100, activation='relu')) # 0.88
+# model.add(Dense(100, activation='elu')) # 0.88
+model.add(Dense(100, activation='relu'))  # 0.88
+model.add(Dense(100, activation='relu'))  # 0.88
 
 
-model.add(Dense(100, activation='relu')) # 0.88
+model.add(Dense(100, activation='relu'))  # 0.88
 
 model.add(Dense(1, activation='linear'))
 
-#model.add(Dense(100, activation='tanh')) # 0.88
+# model.add(Dense(100, activation='tanh')) # 0.88
 
 
-#tanh,exponential,linear
+# tanh,exponential,linear
 
 #model.add(Dense(1, activation='linear'))
 
@@ -164,111 +158,119 @@ model.compile(optimizer='rmsprop',
               loss='mean_squared_error')
 
 
-
 hist = model.fit(X_train, y_train,
                  batch_size=20, epochs=400,
                  validation_data=(X_test, y_test))
 
 
+y_pred = model.predict(newX)
+y_pred = y_pred.flatten()
+y_train = newy_pt.flatten()
 
 
-y_pred=model.predict(newX)
-y_pred=y_pred.flatten()
-y_train=newy_pt.flatten()
+rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
+print('RMSE= %6.2f  ' % rmse)
 
 
-rmse=math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
-print('RMSE= %6.2f  '  %rmse)
+# =============================================================================
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+# pressure
 
 
-
-#=============================================================================
-#------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------
-#pressure
-
-
-newy_pt=newy_pre
+newy_pt = newy_pre
 
 
 X_train, X_test, y_train, y_test = train_test_split(
     newX, newy_pt, train_size=0.8, random_state=0)
 
 
-
 modelp = Sequential()
 
 
-
-#for temperature
-modelp.add(Dense(100,activation='softsign') )
-modelp.add(Dense(100,activation='softsign') )
-
+# for temperature
+modelp.add(Dense(100, activation='softsign'))
+modelp.add(Dense(100, activation='softsign'))
 
 
 modelp.add(Dense(1, activation='linear'))
 
 
-
 modelp.compile(optimizer='rmsprop',
-              loss='mean_squared_error')
-
+               loss='mean_squared_error')
 
 
 histp = modelp.fit(X_train, y_train,
-                 batch_size=20, epochs=200,
-                 validation_data=(X_test, y_test))
+                   batch_size=20, epochs=200,
+                   validation_data=(X_test, y_test))
 
 
+yp_pred = modelp.predict(newX)
+yp_pred = yp_pred.flatten()
+yp_train = newy_pt.flatten()
+
+rmsep = math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
 
 
-yp_pred=modelp.predict(newX)
-yp_pred=yp_pred.flatten()
-yp_train=newy_pt.flatten()
-
-rmsep=math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
+# --------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
+# read natural example
 
 
+data2 = pd.read_excel('example.xlsx', header=0, index_col=0)
 
-#--------------------------------------------------------------------------------------
-#--------------------------------------------------------------------------------------
-#read natural example
+# train data determined from dataframe
 
-
-data2 = pd.read_excel('example.xlsx',header = 0,index_col=0)
-
-#train data determined from dataframe
-
-Num_data=len(data2)
-Naturedata = np.zeros((Num_data,10))  
-for i in range(0,Num_data):  
- for j in range(0,10):  
-   Naturedata[i][j] = data2.iloc[i,j]  
+Num_data = len(data2)
+Naturedata = np.zeros((Num_data, 10))
+for i in range(0, Num_data):
+    for j in range(0, 10):
+        Naturedata[i][j] = data2.iloc[i, j]
 
 
-T=model.predict(Naturedata)
-P=modelp.predict(Naturedata)   
-   
+T = model.predict(Naturedata)
+P = modelp.predict(Naturedata)
+
 
 plt.figure()
 
 
-#plot error bar 
-plt.errorbar(T*1000,P, xerr=rmse*1000,yerr=rmsep, fmt='o', mfc='b',
-         mec='k',ecolor='k',elinewidth=1,capthick=1,capsize=0)
+# plot error bar
+plt.errorbar(T*1000, P, xerr=rmse*1000, yerr=rmsep, fmt='o', mfc='b',
+             mec='k', ecolor='k', elinewidth=1, capthick=1, capsize=0)
 ax = plt.gca()
 
 
-plt.xlim(1000,1800)
-plt.ylim(0,7)
+plt.xlim(1000, 1800)
+plt.ylim(0, 7)
 
 ax.invert_yaxis()
 plt.ylabel('Pressure (GPa)')
-ax.xaxis.set_ticks_position('top')  #将x轴的位置设置在顶部
+ax.xaxis.set_ticks_position('top')  # 将x轴的位置设置在顶部
 
 #ax.set_xticklabels(row_labels, minor=False)
 
-ax.set_xlabel('Temperature (℃)')    
-ax.xaxis.set_label_position('top') 
+ax.set_xlabel('Temperature (℃)')
+ax.xaxis.set_label_position('top')
+print("Not final: ", rmsep)
+print("Final: ", rmse)
+
+model_json = model.to_json()
+with open("model_temperature_transional.json", "w") as json_file:
+    json_file.write(model_json)
+# serialize weights to HDF5
+model.save_weights("model_temperature_transional.h5")
+print("Saved model to disk")
+
+model_json_pressure = modelp.to_json()
+with open("model_pressure_transitional.json", "w") as json_file_2:
+    json_file_2.write(model_json_pressure)
+# serialize weights to HDF5
+modelp.save_weights("model_pressure_transitional.h5")
+print("Saved model to disk")
+# later...
+
+print('rmse is: ', rmse)
+print('rmsep is: ', rmsep)

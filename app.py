@@ -7,6 +7,7 @@ import os
 import runpy
 import openpyxl
 
+from keras.models import model_from_json
 import pandas as pd
 from sklearn.metrics import plot_confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -170,180 +171,199 @@ def run_first_model():
 
     plt.ylabel('CaO(wt%)', fontsize=12)
 
+    plt.savefig("./static/first.png")
+
     return plt
     # plt.savefig("./static/image.png")
 
 
 def run_transitional_model():
-    data = pd.read_excel(
-        'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1, engine='openpyxl')
+    # data = pd.read_excel(
+    #     'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1, engine='openpyxl')
 
-    # change into the data we need float
-    # train data determined from dataframe
-    Traindata = np.zeros((915, 10))
-    for i in range(0, 915):
-        for j in range(0, 10):
-            Traindata[i][j] = data.iloc[i+1, j+6]
+    # # change into the data we need float
+    # # train data determined from dataframe
+    # Traindata = np.zeros((915, 10))
+    # for i in range(0, 915):
+    #     for j in range(0, 10):
+    #         Traindata[i][j] = data.iloc[i+1, j+6]
 
-    # change nan into 0
-    for i in range(0, 915):
-        for j in range(0, 10):
-            if (np.isnan(Traindata[i][j])):
-                Traindata[i][j] = 0
+    # # change nan into 0
+    # for i in range(0, 915):
+    #     for j in range(0, 10):
+    #         if (np.isnan(Traindata[i][j])):
+    #             Traindata[i][j] = 0
 
-    # lable from dataframe
-    Group = np.zeros((915, 1))
-    for i in range(0, 915):
-        Group[i] = data.iloc[i+1, 24]
+    # # lable from dataframe
+    # Group = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     Group[i] = data.iloc[i+1, 24]
 
-    # melting degree
-    meltdegree = np.zeros((915, 1))
-    for i in range(0, 915):
-        meltdegree[i] = data.iloc[i+1, 3]
+    # # melting degree
+    # meltdegree = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     meltdegree[i] = data.iloc[i+1, 3]
 
-    # temperature
-    temperature = np.zeros((915, 1))
-    for i in range(0, 915):
-        temperature[i] = data.iloc[i+1, 2]
+    # # temperature
+    # temperature = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     temperature[i] = data.iloc[i+1, 2]
 
-    # pressure
-    pressure = np.zeros((915, 1))
-    for i in range(0, 915):
-        pressure[i] = data.iloc[i+1, 1]
+    # # pressure
+    # pressure = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     pressure[i] = data.iloc[i+1, 1]
 
-    # dry or not from dataframe
-    # 1 is hydrous  0 is anhydrous
-    Hydrous = np.zeros((915, 1))
-    for i in range(0, 915):
-        Hydrous[i] = data.iloc[i+1, 29]
+    # # dry or not from dataframe
+    # # 1 is hydrous  0 is anhydrous
+    # Hydrous = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     Hydrous[i] = data.iloc[i+1, 29]
 
-    index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
-    #index1 = np.where(Group == 1)
+    # index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
+    # #index1 = np.where(Group == 1)
 
-    index_peridotite = index1[0]
+    # index_peridotite = index1[0]
 
-    index2 = np.where((Group == 2) & (Hydrous == 1))
-    index_transition = index2[0]
+    # index2 = np.where((Group == 2) & (Hydrous == 1))
+    # index_transition = index2[0]
 
-    #index3 = np.where((Group == 3) & (Hydrous==1))
-    index3 = np.where(Group == 3)
-    index_mafic = index3[0]
+    # #index3 = np.where((Group == 3) & (Hydrous==1))
+    # index3 = np.where(Group == 3)
+    # index_mafic = index3[0]
 
-    meltdegree_transition = meltdegree[index_transition]
+    # meltdegree_transition = meltdegree[index_transition]
 
-    temperature_transition = temperature[index_transition]
+    # temperature_transition = temperature[index_transition]
 
-    pressure_transition = pressure[index_transition]
+    # pressure_transition = pressure[index_transition]
 
-    X_transition = Traindata[index_transition]  # traning data for mafic
+    # X_transition = Traindata[index_transition]  # traning data for mafic
 
-    hydrous_transition = Hydrous[index_transition]
+    # hydrous_transition = Hydrous[index_transition]
 
-    # =============================================================================
-    # mafic
+    # # =============================================================================
+    # # mafic
 
-    newX = X_transition
-    # newy=md_label
-    # newy=tem_label
-    newy_md = meltdegree_transition
-    newy_tem = temperature_transition
-    newy_pre = pressure_transition
+    # newX = X_transition
+    # # newy=md_label
+    # # newy=tem_label
+    # newy_md = meltdegree_transition
+    # newy_tem = temperature_transition
+    # newy_pre = pressure_transition
 
-    # newy_pt=1000*newy_pre/newy_tem
+    # # newy_pt=1000*newy_pre/newy_tem
 
-    newy_pt = newy_tem/1000
+    # newy_pt = newy_tem/1000
 
-    # =============================================================================
-    # model = Sequential([
-    #     Dense(10, activation='relu', input_shape=(10,)),
-    #     Dense(10, activation='relu'),
-    #     Dense(1, activation='sigmoid'),
-    # ])
-    #
-    #
-    # model.compile(loss='mean_squared_error', optimizer='adam')
-    # =============================================================================
+    # # =============================================================================
+    # # model = Sequential([
+    # #     Dense(10, activation='relu', input_shape=(10,)),
+    # #     Dense(10, activation='relu'),
+    # #     Dense(1, activation='sigmoid'),
+    # # ])
+    # #
+    # #
+    # # model.compile(loss='mean_squared_error', optimizer='adam')
+    # # =============================================================================
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        newX, newy_pt, train_size=0.8, random_state=0)
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     newX, newy_pt, train_size=0.8, random_state=0)
 
-    model = Sequential()
+    # model = Sequential()
 
-    # for p/t
-    #model.add(Dense(100, input_shape=(10,)))
-    # model.add(Dense(100, activation='softsign')) # 0.88
-    # model.add(Dense(100, activation='softsign')) # 0.88
-    #model.add(Dense(1, activation='linear'))
+    # # for p/t
+    # #model.add(Dense(100, input_shape=(10,)))
+    # # model.add(Dense(100, activation='softsign')) # 0.88
+    # # model.add(Dense(100, activation='softsign')) # 0.88
+    # #model.add(Dense(1, activation='linear'))
 
-    # for temperature
-    model.add(Dense(100, activation='softsign'))
+    # # for temperature
+    # model.add(Dense(100, activation='softsign'))
 
-    # model.add(Dense(100, activation='elu')) # 0.88
-    model.add(Dense(100, activation='relu'))  # 0.88
-    model.add(Dense(100, activation='relu'))  # 0.88
+    # # model.add(Dense(100, activation='elu')) # 0.88
+    # model.add(Dense(100, activation='relu'))  # 0.88
+    # model.add(Dense(100, activation='relu'))  # 0.88
 
-    model.add(Dense(100, activation='relu'))  # 0.88
+    # model.add(Dense(100, activation='relu'))  # 0.88
 
-    model.add(Dense(1, activation='linear'))
+    # model.add(Dense(1, activation='linear'))
 
-    # model.add(Dense(100, activation='tanh')) # 0.88
+    # # model.add(Dense(100, activation='tanh')) # 0.88
 
-    # tanh,exponential,linear
+    # # tanh,exponential,linear
 
-    #model.add(Dense(1, activation='linear'))
+    # #model.add(Dense(1, activation='linear'))
 
-    model.compile(optimizer='rmsprop',
-                  loss='mean_squared_error')
+    # model.compile(optimizer='rmsprop',
+    #               loss='mean_squared_error')
 
-    hist = model.fit(X_train, y_train,
-                     batch_size=20, epochs=400,
-                     validation_data=(X_test, y_test))
+    # hist = model.fit(X_train, y_train,
+    #                  batch_size=20, epochs=400,
+    #                  validation_data=(X_test, y_test))
 
-    y_pred = model.predict(newX)
-    y_pred = y_pred.flatten()
-    y_train = newy_pt.flatten()
+    # y_pred = model.predict(newX)
+    # y_pred = y_pred.flatten()
+    # y_train = newy_pt.flatten()
 
-    rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
-    global rmse_transitional
-    rmse_transitional = rmse
-    print('RMSE= %6.2f  ' % rmse)
+    # rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
+    # global rmse_transitional
+    # rmse_transitional = rmse
+    # print('RMSE= %6.2f  ' % rmse)
 
-    # =============================================================================
-    # ------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------
-    # ------------------------------------------------------------------------------------------
-    # pressure
+    # # =============================================================================
+    # # ------------------------------------------------------------------------------------------
+    # # ------------------------------------------------------------------------------------------
+    # # ------------------------------------------------------------------------------------------
+    # # ------------------------------------------------------------------------------------------
+    # # pressure
 
-    newy_pt = newy_pre
+    # newy_pt = newy_pre
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        newX, newy_pt, train_size=0.8, random_state=0)
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     newX, newy_pt, train_size=0.8, random_state=0)
 
-    modelp = Sequential()
+    # modelp = Sequential()
 
-    # for temperature
-    modelp.add(Dense(100, activation='softsign'))
-    modelp.add(Dense(100, activation='softsign'))
+    # # for temperature
+    # modelp.add(Dense(100, activation='softsign'))
+    # modelp.add(Dense(100, activation='softsign'))
 
-    modelp.add(Dense(1, activation='linear'))
+    # modelp.add(Dense(1, activation='linear'))
 
-    modelp.compile(optimizer='rmsprop',
-                   loss='mean_squared_error')
+    # modelp.compile(optimizer='rmsprop',
+    #                loss='mean_squared_error')
 
-    histp = modelp.fit(X_train, y_train,
-                       batch_size=20, epochs=200,
-                       validation_data=(X_test, y_test))
+    # histp = modelp.fit(X_train, y_train,
+    #                    batch_size=20, epochs=200,
+    #                    validation_data=(X_test, y_test))
 
-    yp_pred = modelp.predict(newX)
-    yp_pred = yp_pred.flatten()
-    yp_train = newy_pt.flatten()
+    # yp_pred = modelp.predict(newX)
+    # yp_pred = yp_pred.flatten()
+    # yp_train = newy_pt.flatten()
 
-    rmsep = math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
+    # rmsep = math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
 
-    # --------------------------------------------------------------------------------------
-    # --------------------------------------------------------------------------------------
-    # read natural example
+    # # --------------------------------------------------------------------------------------
+    # # --------------------------------------------------------------------------------------
+    # # read natural example
+    rmsep = 0.3508304773262083
+    rmse = 0.08881064833319496
+    json_file = open('model_temperature_transitional.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    model = model_from_json(loaded_model_json)
+    # load weights into new model
+    model.load_weights("model_temperature_transitional.h5")
+    print("Loaded model from disk")
+    # evaluate loaded model on test data
+    json_file_2 = open('model_pressure_transitional.json', 'r')
+    loaded_model_json_2 = json_file_2.read()
+    json_file_2.close()
+    modelp = model_from_json(loaded_model_json_2)
+    # load weights into new model
+    modelp.load_weights("model_pressure_transitional.h5")
+    print("Loaded model from disk")
 
     data2 = pd.read_excel('./file/example.xlsx', header=0,
                           index_col=0, engine='openpyxl')
@@ -356,8 +376,8 @@ def run_transitional_model():
         for j in range(0, 10):
             Naturedata[i][j] = data2.iloc[i, j]
 
-    T = model.predict(Naturedata)
-    P = modelp.predict(Naturedata)
+    T = model(Naturedata)
+    P = modelp(Naturedata)
 
     plt.figure()
 
@@ -383,199 +403,222 @@ def run_transitional_model():
     array_for_transitional_pressure = P
     global rmsep_transitional
     rmsep_transitional = rmsep
+    global rmse_transitional
+    rmse_transitional = rmse
+    plt.savefig('./static/transitional.png', dpi=300)
     return plt
+    # return 'a string'
 
 
 def run_mafic_model():
-    data = pd.read_excel('data2_check_dry.xlsx',
-                         header=None, skipfooter=1, index_col=1, engine='openpyxl')
-    # change into the data we need float
-    # train data determined from dataframe
-    Traindata = np.zeros((915, 10))
-    for i in range(0, 915):
-        for j in range(0, 10):
-            Traindata[i][j] = data.iloc[i+1, j+6]
+    # data = pd.read_excel('data2_check_dry.xlsx',
+    #                      header=None, skipfooter=1, index_col=1, engine='openpyxl')
+    # # change into the data we need float
+    # # train data determined from dataframe
+    # Traindata = np.zeros((915, 10))
+    # for i in range(0, 915):
+    #     for j in range(0, 10):
+    #         Traindata[i][j] = data.iloc[i+1, j+6]
 
-    # change nan into 0
-    for i in range(0, 915):
-        for j in range(0, 10):
-            if (np.isnan(Traindata[i][j])):
-                Traindata[i][j] = 0
+    # # change nan into 0
+    # for i in range(0, 915):
+    #     for j in range(0, 10):
+    #         if (np.isnan(Traindata[i][j])):
+    #             Traindata[i][j] = 0
 
-    # lable from dataframe
-    Group = np.zeros((915, 1))
-    for i in range(0, 915):
-        Group[i] = data.iloc[i+1, 24]
+    # # lable from dataframe
+    # Group = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     Group[i] = data.iloc[i+1, 24]
 
-    # melting degree
-    meltdegree = np.zeros((915, 1))
-    for i in range(0, 915):
-        meltdegree[i] = data.iloc[i+1, 3]
+    # # melting degree
+    # meltdegree = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     meltdegree[i] = data.iloc[i+1, 3]
 
-    # temperature
-    temperature = np.zeros((915, 1))
-    for i in range(0, 915):
-        temperature[i] = data.iloc[i+1, 2]
+    # # temperature
+    # temperature = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     temperature[i] = data.iloc[i+1, 2]
 
-    # pressure
-    pressure = np.zeros((915, 1))
-    for i in range(0, 915):
-        pressure[i] = data.iloc[i+1, 1]
+    # # pressure
+    # pressure = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     pressure[i] = data.iloc[i+1, 1]
 
-    # dry or not from dataframe
-    # 1 is hydrous  0 is anhydrous
-    Hydrous = np.zeros((915, 1))
-    for i in range(0, 915):
-        Hydrous[i] = data.iloc[i+1, 29]
+    # # dry or not from dataframe
+    # # 1 is hydrous  0 is anhydrous
+    # Hydrous = np.zeros((915, 1))
+    # for i in range(0, 915):
+    #     Hydrous[i] = data.iloc[i+1, 29]
 
-    index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
-    #index1 = np.where(Group == 1)
+    # index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
+    # #index1 = np.where(Group == 1)
 
-    index_peridotite = index1[0]
+    # index_peridotite = index1[0]
 
-    index2 = np.where((Group == 2) & (Hydrous == 1))
-    index_transition = index2[0]
+    # index2 = np.where((Group == 2) & (Hydrous == 1))
+    # index_transition = index2[0]
 
-    #index3 = np.where((Group == 3) & (Hydrous==1))
-    index3 = np.where(Group == 3)
-    index_mafic = index3[0]
+    # #index3 = np.where((Group == 3) & (Hydrous==1))
+    # index3 = np.where(Group == 3)
+    # index_mafic = index3[0]
 
-    meltdegree_mafic = meltdegree[index_mafic]
+    # meltdegree_mafic = meltdegree[index_mafic]
 
-    temperature_mafic = temperature[index_mafic]
+    # temperature_mafic = temperature[index_mafic]
 
-    pressure_mafic = pressure[index_mafic]
+    # pressure_mafic = pressure[index_mafic]
 
-    X_mafic = Traindata[index_mafic]  # traning data for mafic
+    # X_mafic = Traindata[index_mafic]  # traning data for mafic
 
-    hydrous_mafic = Hydrous[index_mafic]
+    # hydrous_mafic = Hydrous[index_mafic]
 
-    # =============================================================================
-    # mafic
+    # # =============================================================================
+    # # mafic
 
-    newX = X_mafic
-    # newy=md_label
-    # newy=tem_label
-    newy_md = meltdegree_mafic
-    newy_tem = temperature_mafic
-    newy_pre = pressure_mafic
+    # newX = X_mafic
+    # # newy=md_label
+    # # newy=tem_label
+    # newy_md = meltdegree_mafic
+    # newy_tem = temperature_mafic
+    # newy_pre = pressure_mafic
 
-    # newy_pt=1000*newy_pre/newy_tem
+    # # newy_pt=1000*newy_pre/newy_tem
 
-    newy_pt = newy_tem/1000
+    # newy_pt = newy_tem/1000
 
-    # =============================================================================
-    # model = Sequential([
-    #     Dense(10, activation='relu', input_shape=(10,)),
-    #     Dense(10, activation='relu'),
-    #     Dense(1, activation='sigmoid'),
-    # ])
-    #
-    #
-    # model.compile(loss='mean_squared_error', optimizer='adam')
-    # =============================================================================
+    # # =============================================================================
+    # # model = Sequential([
+    # #     Dense(10, activation='relu', input_shape=(10,)),
+    # #     Dense(10, activation='relu'),
+    # #     Dense(1, activation='sigmoid'),
+    # # ])
+    # #
+    # #
+    # # model.compile(loss='mean_squared_error', optimizer='adam')
+    # # =============================================================================
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        newX, newy_pt, train_size=0.8, random_state=0)
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     newX, newy_pt, train_size=0.8, random_state=0)
 
-    model = Sequential()
+    # model = Sequential()
 
-    # for p/t
-    #model.add(Dense(100, input_shape=(10,)))
-    # model.add(Dense(100, activation='softsign')) # 0.88
-    # model.add(Dense(100, activation='softsign')) # 0.88
-    #model.add(Dense(1, activation='linear'))
+    # # for p/t
+    # #model.add(Dense(100, input_shape=(10,)))
+    # # model.add(Dense(100, activation='softsign')) # 0.88
+    # # model.add(Dense(100, activation='softsign')) # 0.88
+    # #model.add(Dense(1, activation='linear'))
 
-    # for temperature
-    model.add(Dense(100, activation='softsign'))
+    # # for temperature
+    # model.add(Dense(100, activation='softsign'))
 
-    # model.add(Dense(100, activation='elu')) # 0.88
-    model.add(Dense(100, activation='relu'))  # 0.88
-    model.add(Dense(100, activation='relu'))  # 0.88
+    # # model.add(Dense(100, activation='elu')) # 0.88
+    # model.add(Dense(100, activation='relu'))  # 0.88
+    # model.add(Dense(100, activation='relu'))  # 0.88
 
-    model.add(Dense(100, activation='relu'))  # 0.88
+    # model.add(Dense(100, activation='relu'))  # 0.88
 
-    model.add(Dense(1, activation='linear'))
+    # model.add(Dense(1, activation='linear'))
 
-    # model.add(Dense(100, activation='tanh')) # 0.88
+    # # model.add(Dense(100, activation='tanh')) # 0.88
 
-    # tanh,exponential,linear
+    # # tanh,exponential,linear
 
-    #model.add(Dense(1, activation='linear'))
+    # #model.add(Dense(1, activation='linear'))
 
-    model.compile(optimizer='rmsprop',
-                  loss='mean_squared_error')
+    # model.compile(optimizer='rmsprop',
+    #               loss='mean_squared_error')
 
-    hist = model.fit(X_train, y_train,
-                     batch_size=20, epochs=300,
-                     validation_data=(X_test, y_test))
+    # hist = model.fit(X_train, y_train,
+    #                  batch_size=20, epochs=300,
+    #                  validation_data=(X_test, y_test))
 
-    y_pred = model.predict(newX)
-    y_pred = y_pred.flatten()
-    y_train = newy_pt.flatten()
+    # y_pred = model.predict(newX)
+    # y_pred = y_pred.flatten()
+    # y_train = newy_pt.flatten()
 
-    rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
+    # rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
 
-    # ==========================================================================================
-    # ==========================================================================================
-    # ==========================================================================================
-    # ==========================================================================================
-    # ------------------------------------------------------------------------------------------
-    # pressure
+    # # ==========================================================================================
+    # # ==========================================================================================
+    # # ==========================================================================================
+    # # ==========================================================================================
+    # # ------------------------------------------------------------------------------------------
+    # # pressure
 
-    newX = X_mafic
-    # newy=md_label
-    # newy=tem_label
-    newy_md = meltdegree_mafic
-    newy_tem = temperature_mafic
-    newy_pre = pressure_mafic
+    # newX = X_mafic
+    # # newy=md_label
+    # # newy=tem_label
+    # newy_md = meltdegree_mafic
+    # newy_tem = temperature_mafic
+    # newy_pre = pressure_mafic
 
-    # newy_pt=1000*newy_pre/newy_tem
+    # # newy_pt=1000*newy_pre/newy_tem
 
-    newy_pt = newy_pre
+    # newy_pt = newy_pre
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        newX, newy_pt, train_size=0.8, random_state=0)
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     newX, newy_pt, train_size=0.8, random_state=0)
 
-    modelp = Sequential()
+    # modelp = Sequential()
 
-    # for p/t
-    #model.add(Dense(100, input_shape=(10,)))
-    # model.add(Dense(100, activation='softsign')) # 0.88
-    # model.add(Dense(100, activation='softsign')) # 0.88
-    #model.add(Dense(1, activation='linear'))
+    # # for p/t
+    # #model.add(Dense(100, input_shape=(10,)))
+    # # model.add(Dense(100, activation='softsign')) # 0.88
+    # # model.add(Dense(100, activation='softsign')) # 0.88
+    # #model.add(Dense(1, activation='linear'))
 
-    # for temperature
-    modelp.add(Dense(100, activation='softsign'))
+    # # for temperature
+    # modelp.add(Dense(100, activation='softsign'))
 
-    modelp.add(Dense(100, activation='relu'))  # 0.88
-    modelp.add(Dense(100, activation='relu'))  # 0.88
-    modelp.add(Dense(100, activation='relu'))  # 0.88
+    # modelp.add(Dense(100, activation='relu'))  # 0.88
+    # modelp.add(Dense(100, activation='relu'))  # 0.88
+    # modelp.add(Dense(100, activation='relu'))  # 0.88
 
-    modelp.add(Dense(1, activation='linear'))
+    # modelp.add(Dense(1, activation='linear'))
 
-    # model.add(Dense(100, activation='tanh')) # 0.88
+    # # model.add(Dense(100, activation='tanh')) # 0.88
 
-    # tanh,exponential,linear
+    # # tanh,exponential,linear
 
-    #model.add(Dense(1, activation='linear'))
+    # #model.add(Dense(1, activation='linear'))
 
-    modelp.compile(optimizer='rmsprop',
-                   loss='mean_squared_error')
+    # modelp.compile(optimizer='rmsprop',
+    #                loss='mean_squared_error')
 
-    histp = modelp.fit(X_train, y_train,
-                       batch_size=20, epochs=200,
-                       validation_data=(X_test, y_test))
+    # histp = modelp.fit(X_train, y_train,
+    #                    batch_size=20, epochs=200,
+    #                    validation_data=(X_test, y_test))
 
-    yp_pred = modelp.predict(newX)
-    yp_pred = yp_pred.flatten()
-    yp_train = newy_pt.flatten()
+    # yp_pred = modelp.predict(newX)
+    # yp_pred = yp_pred.flatten()
+    # yp_train = newy_pt.flatten()
 
-    rmsep = math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
+    # rmsep = math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
 
-    # --------------------------------------------------------------------------------------
-    # --------------------------------------------------------------------------------------
-    # read natural example
+    # # --------------------------------------------------------------------------------------
+    # # --------------------------------------------------------------------------------------
+    # # read natural example
+    # load json and create model
+    rmsep = 0.360724512165989
+    rmse = 0.050046018220376624
+    json_file = open('model.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    model = model_from_json(loaded_model_json)
+    # load weights into new model
+    model.load_weights("model.h5")
+    print("Loaded model from disk")
+    # evaluate loaded model on test data
+    json_file_2 = open('model_mafic_pressure.json', 'r')
+    loaded_model_json_2 = json_file_2.read()
+    json_file_2.close()
+    modelp = model_from_json(loaded_model_json_2)
+    # load weights into new model
+    modelp.load_weights("model_mafic_pressure.h5")
+    print("Loaded model from disk")
+    # evaluate loaded model on test data
 
     data2 = pd.read_excel('./file/example.xlsx', header=0,
                           index_col=0, engine='openpyxl')
@@ -588,8 +631,8 @@ def run_mafic_model():
         for j in range(0, 10):
             Naturedata[i][j] = data2.iloc[i, j]
 
-    T = model.predict(Naturedata)
-    P = modelp.predict(Naturedata)
+    T = model(Naturedata)
+    P = modelp(Naturedata)
 
     plt.figure()
 
@@ -618,155 +661,29 @@ def run_mafic_model():
     rmse_mafic = rmse
     global rmsep_mafic
     rmsep_mafic = rmsep
+    plt.savefig('./static/mafic.png', dpi=300)
     return plt
 
 
 def run_peridotite_model():
-    data = pd.read_excel(
-        'data2_check_dry.xlsx', header=None, skipfooter=1, index_col=1, engine='openpyxl')
+    rmsep = 0.2457602527225323
+    rmse = 0.05728688422144199
 
-    # change into the data we need float
-    # train data determined from dataframe
-    Traindata = np.zeros((915, 10))
-    for i in range(0, 915):
-        for j in range(0, 10):
-            Traindata[i][j] = data.iloc[i+1, j+6]
-
-    # change nan into 0
-    for i in range(0, 915):
-        for j in range(0, 10):
-            if (np.isnan(Traindata[i][j])):
-                Traindata[i][j] = 0
-
-    # lable from dataframe
-    Group = np.zeros((915, 1))
-    for i in range(0, 915):
-        Group[i] = data.iloc[i+1, 24]
-
-    # melting degree
-    meltdegree = np.zeros((915, 1))
-    for i in range(0, 915):
-        meltdegree[i] = data.iloc[i+1, 3]
-
-    # temperature
-    temperature = np.zeros((915, 1))
-    for i in range(0, 915):
-        temperature[i] = data.iloc[i+1, 2]
-
-    # pressure
-    pressure = np.zeros((915, 1))
-    for i in range(0, 915):
-        pressure[i] = data.iloc[i+1, 1]
-
-    # dry or not from dataframe
-    # 1 is hydrous  0 is anhydrous
-    Hydrous = np.zeros((915, 1))
-    for i in range(0, 915):
-        Hydrous[i] = data.iloc[i+1, 29]
-
-    index1 = np.where((Group == 1) & (Hydrous == 1))  # hydrous
-    #index1 = np.where(Group == 1)
-
-    index_peridotite = index1[0]
-
-    index2 = np.where((Group == 2) & (Hydrous == 1))
-    index_transition = index2[0]
-
-    #index3 = np.where((Group == 3) & (Hydrous==1))
-    index3 = np.where(Group == 3)
-    index_mafic = index3[0]
-
-    meltdegree_peridotite = meltdegree[index_peridotite]
-
-    temperature_peridotite = temperature[index_peridotite]
-
-    pressure_peridotite = pressure[index_peridotite]
-
-    X_peridotite = Traindata[index_peridotite]  # traning data for mafic
-
-    # =============================================================================
-    # peridotite
-
-    newX = X_peridotite
-    # newy=md_label2
-    # newy=tem_label2
-    newy_tem = temperature_peridotite
-    newy_pre = pressure_peridotite
-
-    newy_pt = newy_tem/1000
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        newX, newy_pt, train_size=0.8, random_state=0)
-
-    model = Sequential()
-
-    # for temperature
-    model.add(Dense(100, activation='softsign'))
-
-    model.add(Dense(100, activation='elu'))  # 0.88
-    model.add(Dense(100, activation='relu'))  # 0.88
-    model.add(Dense(100, activation='relu'))  # 0.88
-
-    model.add(Dense(100, activation='relu'))  # 0.88
-
-    model.add(Dense(1, activation='linear'))
-
-    model.compile(optimizer='rmsprop',
-                  loss='mean_squared_error')
-
-    hist = model.fit(X_train, y_train,
-                     batch_size=20, epochs=200,
-                     validation_data=(X_test, y_test))
-
-    # --------------------------------------------accurancy
-
-    y_pred = model.predict(newX)
-    y_pred = y_pred.flatten()
-    y_train = newy_pt.flatten()
-
-    rmse = math.sqrt(sum((y_pred-y_train)**2)/len(y_train))
-
-    # ========================================================================================================
-    # ========================================================================================================
-    # peridotite  pressure
-
-    newy_pt = newy_pre
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        newX, newy_pt, train_size=0.8, random_state=0)
-
-    modelp = Sequential()
-
-    # for temperature
-    modelp.add(Dense(100, activation='softsign'))
-    modelp.add(Dense(100, activation='softsign'))
-
-    # modelp.add(Dense(100, activation='relu')) # 0.88
-    # modelp.add(Dense(100, activation='relu')) # 0.88
-
-    # modelp.add(Dense(100, activation='relu')) # 0.88
-
-    modelp.add(Dense(1, activation='linear'))
-
-    modelp.compile(optimizer='rmsprop',
-                   loss='mean_squared_error')
-
-    histp = modelp.fit(X_train, y_train,
-                       batch_size=20, epochs=200,
-                       validation_data=(X_test, y_test))
-
-    # --------------------------------------------accurancy
-
-    yp_pred = modelp.predict(newX)
-    yp_pred = yp_pred.flatten()
-
-    yp_train = newy_pt.flatten()
-
-    rmsep = math.sqrt(sum((yp_pred-yp_train)**2)/len(yp_train))
-
-    # --------------------------------------------------------------------------------------
-    # --------------------------------------------------------------------------------------
-    # read natural example
+    json_file = open('model_temperature_peridotitic.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    model = model_from_json(loaded_model_json)
+    # load weights into new model
+    model.load_weights("model_temperature_peridotitic.h5")
+    print("Loaded model from disk")
+    # evaluate loaded model on test data
+    json_file_2 = open('model_pressure_peridotitic.json', 'r')
+    loaded_model_json_2 = json_file_2.read()
+    json_file_2.close()
+    modelp = model_from_json(loaded_model_json_2)
+    # load weights into new model
+    modelp.load_weights("model_pressure_peridotitic.h5")
+    print("Loaded model from disk")
 
     data2 = pd.read_excel('./file/example.xlsx', header=0,
                           index_col=0, engine='openpyxl')
@@ -779,8 +696,8 @@ def run_peridotite_model():
         for j in range(0, 10):
             Naturedata[i][j] = data2.iloc[i, j]
 
-    T = model.predict(Naturedata)
-    P = modelp.predict(Naturedata)
+    T = model(Naturedata)
+    P = modelp(Naturedata)
 
     plt.figure()
 
@@ -809,6 +726,7 @@ def run_peridotite_model():
     rmse_peridotite = rmse
     global rmsep_peridotite
     rmsep_peridotite = rmsep
+    plt.savefig('./static/peridotite.png', dpi=300)
     return plt
 
 
@@ -953,65 +871,77 @@ def index():
     #     os.remove("./static/result-transitional.xlsx")
     if os.path.isfile('./static/result.xlsx'):
         os.remove("./static/result.xlsx")
+    if os.path.isfile('./static/mafic.png'):
+        os.remove("./static/mafic.png")
+    if os.path.isfile('./static/transitional.png'):
+        os.remove("./static/transitional.png")
+    if os.path.isfile('./static/peridotite.png'):
+        os.remove("./static/peridotite.png")
+    if os.path.isfile('./static/first.png'):
+        os.remove("./static/first.png")
     if request.method == 'POST':
         input_file = request.files["upload-file"]
         if input_file.filename != '':
             input_file.save("./file/example.xlsx")
             # runpy.run_path(path_name='ANN_classification_web.py')
             run_first_model()
+            run_transitional_model()
+            run_mafic_model()
+            run_peridotite_model()
+            run_modify_excel()
     # print(array_for_peridotite)
     return render_template("index.html")
 
 
-@app.route('/fig')
-def fig():
-    if os.path.isfile('./file/example.xlsx'):
-        fig = run_first_model()
-        img = BytesIO()
-        fig.savefig(img)
-        img.seek(0)
-        # os.remove("./file/example.xlsx")  # remove Excel from file system after use
-        return send_file(img, mimetype='image/png')
-    return 'a string'
+# @app.route('/fig')
+# def fig():
+#     if os.path.isfile('./file/example.xlsx'):
+#         fig = run_first_model()
+#         img = BytesIO()
+#         fig.savefig(img)
+#         img.seek(0)
+#         # os.remove("./file/example.xlsx")  # remove Excel from file system after use
+#         return send_file(img, mimetype='image/png')
+#     return 'a string'
 
 
-@app.route('/transitional')
-def transitional():
-    if os.path.isfile('./file/example.xlsx'):
-        fig = run_transitional_model()
-        # run_modify_excel_transitional()
-        img = BytesIO()
-        fig.savefig(img)
-        img.seek(0)
-        # os.remove("./file/example.xlsx")  # remove Excel from file system after use
-        return send_file(img, mimetype='image/png')
-    return 'a string'
+# @app.route('/transitional')
+# def transitional():
+#     if os.path.isfile('./file/example.xlsx'):
+#         fig = run_transitional_model()
+#         # run_modify_excel_transitional()
+#         img = BytesIO()
+#         fig.savefig(img)
+#         img.seek(0)
+#         # os.remove("./file/example.xlsx")  # remove Excel from file system after use
+#         return send_file(img, mimetype='image/png')
+#     return 'a string'
 
 
-@app.route('/mafic')
-def mafic():
-    if os.path.isfile('./file/example.xlsx'):
-        fig = run_mafic_model()
-        run_modify_excel()
-        img = BytesIO()
-        fig.savefig(img)
-        img.seek(0)
-        # os.remove("./file/example.xlsx")  # remove Excel from file system after use
-        return send_file(img, mimetype='image/png')
-    return 'a string'
+# @app.route('/mafic')
+# def mafic():
+#     if os.path.isfile('./file/example.xlsx'):
+#         fig = run_mafic_model()
+#         # run_modify_excel()
+#         img = BytesIO()
+#         fig.savefig(img)
+#         img.seek(0)
+#         # os.remove("./file/example.xlsx")  # remove Excel from file system after use
+#         return send_file(img, mimetype='image/png')
+#     return 'a string'
 
 
-@app.route('/peridotite')
-def peridotite():
-    if os.path.isfile('./file/example.xlsx'):
-        fig = run_peridotite_model()
-        # run_modify_excel_peridotite()
-        img = BytesIO()
-        fig.savefig(img)
-        img.seek(0)
-        # os.remove("./file/example.xlsx")  # remove Excel from file system after use
-        return send_file(img, mimetype='image/png')
-    return 'a string'
+# @app.route('/peridotite')
+# def peridotite():
+#     if os.path.isfile('./file/example.xlsx'):
+#         fig = run_peridotite_model()
+#         # run_modify_excel_peridotite()
+#         img = BytesIO()
+#         fig.savefig(img)
+#         img.seek(0)
+#         # os.remove("./file/example.xlsx")  # remove Excel from file system after use
+#         return send_file(img, mimetype='image/png')
+#     return 'a string'
 
 
 # @app.errorhandler(404)

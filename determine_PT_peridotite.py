@@ -192,4 +192,4 @@ plt.yticks(fontsize=14)
 
 plt.xlim(0.5, 4)
 print("Peridotite: ", y_compare)
-# plt.savefig('compare_lee_histogram.png',dpi=300)
+plt.savefig('compare_lee_histogram.png', dpi=300)

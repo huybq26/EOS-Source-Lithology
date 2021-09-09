@@ -167,3 +167,4 @@ plt.xlabel('MgO(wt%)', fontsize=12)
 plt.ylabel('CaO(wt%)', fontsize=12)
 
 plt.savefig("./static/image.png")
+# print(Naturedata_result)
